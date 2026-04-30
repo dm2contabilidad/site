@@ -40,7 +40,7 @@ Campos relevantes: `slug`, `full_name`, `display_name`, `role_title`,
 `bio_short`, `bio_long`, `crc_number`, `email`, `profile_image_url`,
 `linkedin_url`, `is_active`.
 
-Seed inicial: **Danilo Brito de Morais** (Responsável Técnico, CRC 2SP039587).
+Seed inicial: **Danilo Brito de Morais** (Responsável Técnico pela DM2 Contabilidade Ltda, escritório registrado no CRC-SP 2SP039587). El campo `crc_number` del autor queda en `NULL` — el CRC pertenece al escritorio, no al individuo.
 
 ### `blog_categories`
 Taxonomía editorial. 7 categorías sembradas:
@@ -88,20 +88,40 @@ En el **Supabase SQL Editor**, en este orden:
 1. `docs/supabase-leads-table.sql` — si todavía no se aplicó (define la
    función `update_updated_at` reutilizada por blog).
 2. `docs/supabase-blog-tables.sql` — tablas, índices, triggers, RLS, vista,
-   seeds.
+   seeds (autor + categorías).
 3. `docs/supabase-blog-storage.sql` — bucket `blog-covers` y políticas.
+4. `docs/supabase-blog-seed-posts.sql` — **6 artículos editoriales reales**
+   (3 publicados, 3 programados) con FAQs y servicios relacionados.
 
 Los scripts son **idempotentes**: pueden volver a correrse sin romper datos
 existentes (`CREATE ... IF NOT EXISTS`, `ON CONFLICT DO UPDATE`,
-`DROP POLICY IF EXISTS` antes de cada `CREATE POLICY`).
+`DROP POLICY IF EXISTS` antes de cada `CREATE POLICY`). Para los seeds de
+posts, FAQs y related_services se reescriben (`DELETE WHERE post_id = ...`
+seguido de `INSERT`) en cada corrida, lo que mantiene el archivo SQL como
+fuente de verdad.
 
 Verificación rápida después de aplicar:
 
 ```sql
 SELECT slug, full_name FROM authors;
 SELECT slug, name, sort_order FROM blog_categories ORDER BY sort_order;
-SELECT count(*) FROM blog_posts;  -- 0 esperado en instalación limpia
+SELECT slug, status, published_at, featured_on_home, featured_order
+  FROM blog_posts ORDER BY published_at;
+-- Esperado tras correr los 4 scripts: 1 autor, 7 categorías, 6 posts.
 ```
+
+### Calendario editorial congelado
+
+| # | Título | Estado | published_at | Featured |
+|---|---|---|---|---|
+| 1 | IBS e CBS nas notas fiscais em 2026 (`ibs-cbs-notas-fiscais-2026-empresas-sao-paulo`) | published | 2026-04-08 | 1 |
+| 2 | Receita Sintonia em 2026 (`receita-sintonia-2026-classificacao-fiscal-empresas`) | published | 2026-04-15 | 2 |
+| 3 | Abertura de empresa em São Paulo em 2026 (`abertura-de-empresa-em-sao-paulo-regime-tributario-2026`) | published | 2026-04-22 | 3 |
+| 4 | eSocial em 2026 (`esocial-2026-novas-aliquotas-previdenciarias-folha`) | published | 2026-04-25 | — |
+| 5 | Reforma tributária para prestadores de serviço (`reforma-tributaria-prestadores-de-servico-sao-paulo`) | published | 2026-04-27 | — |
+| 6 | Simples Nacional em 2027 (`simples-nacional-2027-prazos-opcao-ibs-cbs`) | published | 2026-04-28 | — |
+
+Todos firmados por **Danilo Brito de Morais**, Responsável Técnico pela DM2 Contabilidade Ltda (escritorio registrado no CRC-SP 2SP039587). Cada post trae 5 FAQs activas y servicios relacionados.
 
 ---
 

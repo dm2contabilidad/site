@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DM2 Contabilidade — Sitio Institucional
 
-## Getting Started
+Sitio institucional premium para DM2 Contabilidade, escritório de contabilidade en São Paulo, Vila Mariana.
 
-First, run the development server:
+## Stack
+
+- **Next.js 14+** (App Router) — Framework frontend + backend
+- **TypeScript** — Tipado estricto
+- **Tailwind CSS v4** — Estilos con design tokens
+- **Vercel** — Hosting, deploy, CDN
+- **Supabase** — Base de datos PostgreSQL (leads)
+- **Cloudflare** — DNS, WAF, Turnstile, cache
+- **Resend** — Email transaccional (notificaciones de leads)
+
+## Desarrollo local
 
 ```bash
+# 1. Instalar dependencias
+npm install
+
+# 2. Copiar variables de entorno
+cp .env.example .env.local
+# Llenar los valores en .env.local
+
+# 3. Iniciar servidor de desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# 4. Abrir http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Estructura del proyecto
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+├── app/                  # App Router (páginas y layouts)
+├── components/           # Componentes reutilizables
+│   ├── ui/               #   Primitivos: Button, Input, Badge, Card
+│   ├── layout/           #   Header, Footer, Breadcrumbs, Navigation
+│   ├── sections/         #   Secciones: Hero, ServiceBlock, FAQ, CTA
+│   ├── forms/            #   ContactForm, LeadForm
+│   ├── blog/             #   BlogCard, ArticleLayout, TOC, AuthorBio
+│   └── seo/              #   SchemaMarkup, BreadcrumbSchema
+├── content/              # Contenido estructurado
+│   ├── services/         #   Datos tipados de cada servicio
+│   ├── niches/           #   Datos tipados de cada nicho
+│   ├── blog/             #   Artículos MDX, categorías, autores
+│   └── site.ts           #   Config global: NAP, horarios, redes
+├── lib/                  # Utilidades y lógica compartida
+│   ├── analytics.ts      #   Helpers de tracking (GA4, Meta)
+│   ├── constants.ts      #   Navegación, opciones de formulario
+│   ├── metadata.ts       #   Helper de metadata para SEO
+│   ├── sanitize.ts       #   Sanitización de inputs
+│   ├── supabase.ts       #   Cliente Supabase
+│   ├── turnstile.ts      #   Verificación Turnstile server-side
+│   ├── utm.ts            #   Captura y persistencia de UTMs
+│   └── validation.ts     #   Schemas Zod para formularios
+├── styles/
+│   └── globals.css       #   Tailwind + design tokens DM2
+└── types/                # TypeScript types compartidos
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Documentación del proyecto
 
-## Learn More
+Los documentos rectores están en `docs/`:
 
-To learn more about Next.js, take a look at the following resources:
+1. **MASTER-PLAN** — Visión, objetivos, principios, roadmap
+2. **SITEMAP-SEO-GEO-ARCHITECTURE** — Páginas, slugs, SEO, GEO, schema
+3. **DESIGN-SYSTEM-UX-SYSTEM** — Visual, tipografía, colores, UX
+4. **COPY-SYSTEM-CONTENT-ARCHITECTURE** — Voz, tono, copy, pilares
+5. **TECHNICAL-ARCHITECTURE** — Stack, datos, seguridad, tracking
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run dev      # Desarrollo local
+npm run build    # Build de producción
+npm run start    # Servir build de producción
+npm run lint     # ESLint
+```
 
-## Deploy on Vercel
+## Placeholders
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Los datos de negocio pendientes usan el prefijo `TODO_DM2_` o `PLACEHOLDER_`.

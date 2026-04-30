@@ -1,0 +1,29 @@
+# DM2 Contabilidade
+> Escritório de contabilidade em São Paulo, Vila Mariana.
+> Fundado em 2003. Mais de 22 anos de experiência.
+
+## Serviços Contábeis
+- Consultoria Contábil
+- Planejamento Tributário
+- Gestão Fiscal e Tributária
+- Abertura e Regularização de Empresas
+
+## Especialidades
+- Contabilidade para Advogados
+- Contabilidade para Profissionais da Saúde
+- Contabilidade para Negócios Digitais
+
+## Contato
+- Endereço: Rua Vergueiro, 3086 - Conjunto 24, Vila Mariana, São Paulo - SP, 04102-001
+- Telefone: (11) 2749-7332
+- Horário: Segunda a sexta, 8:30 às 17:30
+- Website: https://dm2contabilidade.com.br
+
+## Links
+- [Serviços Contábeis](/servicos-contabeis)
+- [Contabilidade para Advogados](/contabilidade-para-advogados)
+- [Contabilidade para Profissionais da Saúde](/contabilidade-para-profissionais-da-saude)
+- [Contabilidade para Negócios Digitais](/contabilidade-para-negocios-digitais)
+- [Quem Somos](/quem-somos)
+- [Blog](/blog)
+- [Contato](/contato)

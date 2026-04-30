@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+Disallow: /obrigado
+Disallow: /api/
+
+# AI crawlers — ALLOWED
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+Sitemap: https://dm2contabilidade.com.br/sitemap.xml

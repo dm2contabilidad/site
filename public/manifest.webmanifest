@@ -1,0 +1,14 @@
+{
+  "name": "DM2 Contabilidade",
+  "short_name": "DM2",
+  "description": "Escritório de contabilidade em São Paulo, Vila Mariana. Desde 2003.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0C152A",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

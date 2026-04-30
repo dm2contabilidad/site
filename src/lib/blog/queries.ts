@@ -110,22 +110,15 @@ function mapFaq(row: BlogPostFaqRow): BlogPostFaq {
 //   - status = 'published'
 //   - status = 'scheduled' AND published_at <= now()
 //
-// We rely on the same RLS policy server-side, but apply the filter explicitly
-// in the query so the client is also correct when called with a service-role
-// key (where RLS is bypassed).
+// RLS enforces the same rule server-side, but we also apply it explicitly
+// here so the result is correct under a service-role key (RLS bypassed).
+// `now()` is re-evaluated on every call so long-lived processes still see
+// the correct boundary.
 // ---------------------------------------------------------------------------
 
-const VISIBILITY_FILTER =
-  `or(status.eq.published,and(status.eq.scheduled,published_at.lte.${new Date().toISOString()}))`;
-
-function freshVisibilityFilter(): string {
-  // Re-evaluate now() at call time so cached/long-lived processes see the
-  // correct boundary on each request.
-  return `or(status.eq.published,and(status.eq.scheduled,published_at.lte.${new Date().toISOString()}))`;
+function visibilityFilter(): string {
+  return `status.eq.published,and(status.eq.scheduled,published_at.lte.${new Date().toISOString()})`;
 }
-
-// Suppress unused-warning for the constant snapshot above (kept for reference).
-void VISIBILITY_FILTER;
 
 // ---------------------------------------------------------------------------
 // Public API
@@ -134,6 +127,46 @@ void VISIBILITY_FILTER;
 /** Returns true if the Supabase client is available. */
 export function isBlogBackendReady(): boolean {
   return supabase !== null;
+}
+
+/**
+ * Pretty-print a Supabase error. The default console.error path serializes
+ * PostgrestError as `{}` because its enumerable fields don't survive the
+ * console formatter in Next dev. Pulling the relevant fields out by hand
+ * gives a readable message + diagnostic code (e.g. PGRST205 = table missing).
+ */
+function logSupabaseError(scope: string, error: unknown): void {
+  const e = error as {
+    message?: string;
+    code?: string;
+    details?: string;
+    hint?: string;
+  } | null;
+  console.error(`[blog/queries] ${scope} error`, {
+    message: e?.message,
+    code: e?.code,
+    details: e?.details,
+    hint: e?.hint,
+  });
+}
+
+/**
+ * Resolves a category slug to its UUID. Returns null when not found.
+ * Used to filter blog_posts by category_id (filtering on the joined
+ * `category.slug` only narrows the relation, not the parent row, so we
+ * resolve the id explicitly and filter by FK).
+ */
+async function resolveCategoryId(
+  slug: BlogCategorySlug,
+): Promise<string | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from('blog_categories')
+    .select<string, { id: string }>('id')
+    .eq('slug', slug)
+    .maybeSingle();
+  if (error || !data) return null;
+  return data.id;
 }
 
 /**
@@ -149,28 +182,66 @@ export async function getPublishedPosts(options?: {
 
   const { limit = 12, offset = 0, categorySlug } = options ?? {};
 
+  let categoryId: string | null = null;
+  if (categorySlug) {
+    categoryId = await resolveCategoryId(categorySlug);
+    if (!categoryId) return [];
+  }
+
   let query = supabase
     .from('blog_posts')
     .select<string, PostRowWithRelations>(
       `*, author:authors(*), category:blog_categories(*)`,
     )
-    .or(
-      `status.eq.published,and(status.eq.scheduled,published_at.lte.${new Date().toISOString()})`,
-    )
+    .or(visibilityFilter())
     .order('published_at', { ascending: false, nullsFirst: false })
     .range(offset, offset + limit - 1);
 
-  if (categorySlug) {
-    // Filter via joined category slug
-    query = query.eq('category.slug', categorySlug);
+  if (categoryId) {
+    query = query.eq('category_id', categoryId);
   }
 
   const { data, error } = await query;
   if (error) {
-    console.error('[blog/queries] getPublishedPosts error', error);
+    logSupabaseError('getPublishedPosts', error);
     return [];
   }
   return (data ?? []).map(mapPost);
+}
+
+/**
+ * Count of visible posts, optionally filtered by category. Used by
+ * the blog index to compute pagination total. Cheap call: server-side
+ * count, no rows transferred.
+ */
+export async function countPublishedPosts(options?: {
+  categorySlug?: BlogCategorySlug;
+}): Promise<number> {
+  if (!supabase) return 0;
+
+  const { categorySlug } = options ?? {};
+
+  let categoryId: string | null = null;
+  if (categorySlug) {
+    categoryId = await resolveCategoryId(categorySlug);
+    if (!categoryId) return 0;
+  }
+
+  let query = supabase
+    .from('blog_posts')
+    .select('id', { count: 'exact', head: true })
+    .or(visibilityFilter());
+
+  if (categoryId) {
+    query = query.eq('category_id', categoryId);
+  }
+
+  const { count, error } = await query;
+  if (error) {
+    logSupabaseError('countPublishedPosts', error);
+    return 0;
+  }
+  return count ?? 0;
 }
 
 /**
@@ -185,11 +256,11 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       `*, author:authors(*), category:blog_categories(*)`,
     )
     .eq('slug', slug)
-    .or(freshVisibilityFilter())
+    .or(visibilityFilter())
     .maybeSingle();
 
   if (error) {
-    console.error('[blog/queries] getPostBySlug error', error);
+    logSupabaseError('getPostBySlug', error);
     return null;
   }
   return data ? mapPost(data) : null;
@@ -206,7 +277,6 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
  */
 export async function getFeaturedPosts(limit = 3): Promise<BlogPost[]> {
   if (!supabase) return [];
-  const now = new Date().toISOString();
 
   // 1. Featured pool
   const { data: featuredRows, error: e1 } = await supabase
@@ -215,13 +285,13 @@ export async function getFeaturedPosts(limit = 3): Promise<BlogPost[]> {
       `*, author:authors(*), category:blog_categories(*)`,
     )
     .eq('featured_on_home', true)
-    .or(`status.eq.published,and(status.eq.scheduled,published_at.lte.${now})`)
+    .or(visibilityFilter())
     .order('featured_order', { ascending: true, nullsFirst: false })
     .order('published_at', { ascending: false, nullsFirst: false })
     .limit(limit);
 
   if (e1) {
-    console.error('[blog/queries] getFeaturedPosts (featured) error', e1);
+    logSupabaseError('getFeaturedPosts (featured)', e1);
     return [];
   }
 
@@ -237,12 +307,12 @@ export async function getFeaturedPosts(limit = 3): Promise<BlogPost[]> {
     .select<string, PostRowWithRelations>(
       `*, author:authors(*), category:blog_categories(*)`,
     )
-    .or(`status.eq.published,and(status.eq.scheduled,published_at.lte.${now})`)
+    .or(visibilityFilter())
     .order('published_at', { ascending: false, nullsFirst: false })
     .limit(missing + featured.length); // small overshoot to dedupe
 
   if (e2) {
-    console.error('[blog/queries] getFeaturedPosts (latest) error', e2);
+    logSupabaseError('getFeaturedPosts (latest)', e2);
     return featured;
   }
 
@@ -268,7 +338,7 @@ export async function getPostFaqs(postId: string): Promise<BlogPostFaq[]> {
     .order('sort_order', { ascending: true });
 
   if (error) {
-    console.error('[blog/queries] getPostFaqs error', error);
+    logSupabaseError('getPostFaqs', error);
     return [];
   }
   return (data ?? []).map(mapFaq);
@@ -290,7 +360,7 @@ export async function getPostRelatedServiceSlugs(postId: string): Promise<string
     .order('sort_order', { ascending: true });
 
   if (error) {
-    console.error('[blog/queries] getPostRelatedServiceSlugs error', error);
+    logSupabaseError('getPostRelatedServiceSlugs', error);
     return [];
   }
   return (data ?? []).map((r) => r.service_slug);
@@ -309,7 +379,7 @@ export async function getActiveCategories(): Promise<BlogCategory[]> {
     .order('sort_order', { ascending: true });
 
   if (error) {
-    console.error('[blog/queries] getActiveCategories error', error);
+    logSupabaseError('getActiveCategories', error);
     return [];
   }
   return (data ?? []).map(mapCategory);
@@ -328,7 +398,7 @@ export async function getActiveAuthors(): Promise<Author[]> {
     .order('full_name', { ascending: true });
 
   if (error) {
-    console.error('[blog/queries] getActiveAuthors error', error);
+    logSupabaseError('getActiveAuthors', error);
     return [];
   }
   return (data ?? []).map(mapAuthor);

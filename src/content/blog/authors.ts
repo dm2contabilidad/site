@@ -9,7 +9,7 @@ export const authors: Record<string, AuthorLegacy> = {
   'danilo-brito': {
     slug: 'danilo-brito',
     name: 'Danilo Brito de Morais',
-    role: 'Responsável Técnico — CRC 2SP039587',
+    role: 'Responsável Técnico',
     bio: 'Contador responsável pela DM2 Contabilidade. Atua em São Paulo com foco em consultoria contábil, planejamento tributário e gestão fiscal para empresas.',
   },
 };

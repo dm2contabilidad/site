@@ -305,7 +305,13 @@ CREATE POLICY "blog_post_related_authenticated_write" ON blog_post_related_servi
 -- 8. Seeds
 -- =============================================
 
--- Author: Danilo Brito de Morais (Responsável Técnico)
+-- Author: Danilo Brito de Morais (Responsável Técnico).
+-- NOTE: crc_number is intentionally NULL. The CRC-SP 2SP039587 belongs to
+-- DM2 Contabilidade Ltda (the firm), not to the individual professional.
+-- The firm's CRC is held in `siteConfig.crcSp` and surfaced as the
+-- publisher identifier in BlogPosting JSON-LD. The `crc_number` column
+-- on `authors` is kept for forward compatibility but should remain NULL
+-- for representantes técnicos who are not registering a personal CRC.
 INSERT INTO authors (
   slug, full_name, display_name, role_title, bio_short, crc_number, is_active
 ) VALUES (
@@ -314,7 +320,7 @@ INSERT INTO authors (
   'Danilo Brito de Morais',
   'Responsável Técnico',
   'Contador responsável pela DM2 Contabilidade. Atua em São Paulo desde 2003 com foco em consultoria contábil, planejamento tributário e gestão fiscal para empresas de pequeno e médio porte.',
-  '2SP039587',
+  NULL,
   true
 )
 ON CONFLICT (slug) DO UPDATE SET
