@@ -267,6 +267,31 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
 }
 
 /**
+ * Fetch multiple visible posts by their slugs, preserving the order given.
+ * Returns posts in the same order as the input slugs; missing slugs are
+ * silently dropped.
+ */
+export async function getPostsBySlugs(slugs: string[]): Promise<BlogPost[]> {
+  if (!supabase || slugs.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select<string, PostRowWithRelations>(
+      `*, author:authors(*), category:blog_categories(*)`,
+    )
+    .in('slug', slugs)
+    .or(visibilityFilter());
+
+  if (error) {
+    logSupabaseError('getPostsBySlugs', error);
+    return [];
+  }
+
+  const bySlug = new Map((data ?? []).map((row) => [row.slug, mapPost(row)]));
+  return slugs.map((s) => bySlug.get(s)).filter((p): p is BlogPost => Boolean(p));
+}
+
+/**
  * Posts to feature on the home page.
  *
  * Order:

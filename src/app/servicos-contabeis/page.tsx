@@ -1,7 +1,7 @@
+import Link from 'next/link';
 import { createMetadata } from '@/lib/metadata';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Section } from '@/components/layout/Section';
-import { Card } from '@/components/ui/Card';
 import { CTAStrip } from '@/components/sections/CTAStrip';
 import { FAQAccordion } from '@/components/sections/FAQAccordion';
 import { FAQSchema, ItemListSchema } from '@/components/seo/SchemaMarkup';
@@ -57,28 +57,56 @@ export default function ServicosContabeisPage() {
       />
 
       <Section spacing="lg">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
           {serviceList.map((service) => (
-            <Card
+            <Link
               key={service.slug}
               href={`/servicos-contabeis/${service.slug}`}
-              padding="lg"
-              accent
-              className="group"
+              className="group relative flex flex-col bg-white rounded-lg border border-[color:var(--color-border-soft)] p-7 md:p-9 hover:border-navy-800 hover:shadow-[0_8px_28px_-12px_rgba(7,71,93,0.18)] transition-all"
             >
-              <h2 className="text-xl font-semibold text-navy-900 mb-3">
+              {/* Acento gold superior */}
+              <span
+                aria-hidden="true"
+                className="absolute top-0 left-7 right-7 md:left-9 md:right-9 h-[3px] bg-gold-500 rounded-full"
+              />
+              <p
+                className="text-[10px] uppercase tracking-[0.22em] text-gold-600 mb-3"
+                style={{ fontFamily: 'var(--font-label)' }}
+              >
+                {service.hero.eyebrow}
+              </p>
+              <h2
+                className="text-xl md:text-[1.5rem] font-bold text-navy-900 leading-tight mb-3"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
                 {service.title}
               </h2>
-              <p className="text-sm text-neutral-700 leading-relaxed">
-                {service.intro.split('. ').slice(0, 2).join('. ')}.
+              <p className="text-[15px] md:text-base text-neutral-700 leading-relaxed">
+                {service.hero.subtitle}
               </p>
-              <span className="inline-block mt-4 text-sm font-semibold text-navy-800 group-hover:text-gold-600 transition-colors">
-                Conhecer {service.title.toLowerCase()} →
+
+              {/* Dado-chave em chip */}
+              <div className="mt-6 pt-5 border-t border-[color:var(--color-border-soft)] flex items-baseline gap-3">
+                <span
+                  className="text-lg md:text-xl font-bold text-navy-900 tracking-tight leading-none"
+                  style={{ fontFamily: 'var(--font-display)' }}
+                >
+                  {service.hero.keyFact.value}
+                </span>
+                <span className="text-xs md:text-[13px] text-neutral-600 leading-snug">
+                  {service.hero.keyFact.label}
+                </span>
+              </div>
+
+              <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-navy-800 group-hover:text-gold-600 transition-colors">
+                Conhecer {service.title.toLowerCase()}
+                <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">→</span>
               </span>
-            </Card>
+            </Link>
           ))}
         </div>
       </Section>
+
 
       {/* Como funciona o atendimento */}
       <Section bg="soft" spacing="default">
@@ -144,7 +172,7 @@ export default function ServicosContabeisPage() {
 
       <CTAStrip
         title="Não sabe por onde começar?"
-        subtitle="Conte rapidamente sobre sua empresa. A DM2 Contabilidade indica o caminho sem compromisso."
+        subtitle="Conte rapidamente sobre sua empresa. Indicamos por escrito qual frente faz mais sentido para o seu momento. Resposta em 24h úteis."
         buttonText="Fale com a DM2 Contabilidade"
       />
     </>

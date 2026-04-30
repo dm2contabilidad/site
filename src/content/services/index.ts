@@ -4,6 +4,11 @@ import type { Service, ServiceSlug } from '@/types/service';
  * Core services — DM2 Contabilidade
  * Director decision (02-abr-2026): 4 core services confirmed.
  * Route: /servicos-contabeis/[slug]
+ *
+ * Every service follows the same 9-block page structure (PageHero,
+ * intro, contexto/problema, stakes, approach, processo, FAQ, related,
+ * finalCta). The opening voice is service-first: "the problem and the
+ * service that answers it". For client-first voice, see niches/index.ts.
  */
 
 export const services: Record<ServiceSlug, Service> = {
@@ -14,8 +19,35 @@ export const services: Record<ServiceSlug, Service> = {
     metaDescription:
       'Consultoria contábil em São Paulo para empresas que precisam de orientação estratégica, não só entrega de obrigações. Escritório em Vila Mariana, desde 2003.',
     h1: 'Consultoria Contábil em São Paulo',
+    hero: {
+      eyebrow: 'Acompanhamento mensal',
+      subtitle:
+        'Não é só entregar guias. É ler os números da sua empresa todo mês e orientar decisões antes que virem problema.',
+      keyFact: { value: '+22 anos', label: 'atendendo empresas em São Paulo' },
+      cta: {
+        text: 'Quero a análise inicial',
+        promise: 'Análise sem custo. Resposta em 24h úteis.',
+      },
+    },
     intro:
       'A consultoria contábil é o serviço de acompanhamento mensal que combina escrituração, análise dos números do negócio e orientação técnica para a tomada de decisões empresariais. Diferente da contabilidade tradicional, que se limita a entregar guias e obrigações acessórias, a consultoria atua de forma ativa: revisa o enquadramento tributário (Simples Nacional, Lucro Presumido ou Lucro Real), monitora margem, custos e indicadores do DRE, alerta sobre prazos do SPED Contábil, DCTF, EFD-Contribuições e DIRF, e indica caminhos para reduzir a carga fiscal dentro da lei. Aplica-se a empresas de pequeno e médio porte que precisam usar a contabilidade como ferramenta de gestão, não apenas como obrigação burocrática. A DM2 Contabilidade atua em Vila Mariana, São Paulo, desde 2003, com mais de 22 anos de experiência atendendo empresas em diferentes setores. Cada cliente tem acompanhamento individualizado e relatórios mensais com orientações práticas. Nada é processado em massa.',
+    stakes: [
+      {
+        label: 'Regime tributário inadequado',
+        detail:
+          'Empresas no enquadramento errado pagam até 30% a mais de imposto por ano sem necessidade técnica.',
+      },
+      {
+        label: 'Prazo de obrigação acessória perdido',
+        detail:
+          'Multa automática por entrega fora do prazo, com juros mensais sobre o valor declarado.',
+      },
+      {
+        label: 'Decisões tomadas sem base contábil',
+        detail:
+          'Distribuição de lucros, pró-labore e investimentos definidos no escuro geram retrabalho fiscal e exposição.',
+      },
+    ],
     sections: {
       contexto:
         'Muitas empresas tratam a contabilidade como uma obrigação burocrática: entregam documentos todo mês e esperam que tudo esteja em dia. Mas a contabilidade bem feita é uma ferramenta de gestão. Ela mostra o que está funcionando, o que está custando caro e onde estão as oportunidades.',
@@ -31,7 +63,6 @@ export const services: Record<ServiceSlug, Service> = {
       'Definição do enquadramento tributário mais adequado',
       'Escrituração e acompanhamento mensal das obrigações',
       'Relatórios periódicos com orientações práticas',
-      'Revisão anual de regime e planejamento para o exercício seguinte',
     ],
     faqs: [
       {
@@ -56,8 +87,17 @@ export const services: Record<ServiceSlug, Service> = {
       },
     ],
     relatedServices: ['planejamento-tributario', 'gestao-fiscal-e-tributaria'],
-    relatedNiches: ['advogados', 'profissionais-da-saude'],
-    relatedPosts: [],
+    relatedNiches: ['contabilidade-para-advogados', 'contabilidade-para-profissionais-da-saude'],
+    relatedPosts: [
+      'receita-sintonia-2026-classificacao-fiscal-empresas',
+      'simples-nacional-2027-prazos-opcao-ibs-cbs',
+    ],
+    finalCta: {
+      title: 'Sua empresa precisa de consultoria contábil de verdade?',
+      subtitle:
+        'Análise sem custo da situação atual e parecer escrito sobre o que deveria mudar. Resposta em 24h úteis.',
+      buttonText: 'Quero a análise',
+    },
     priority: 'maxima',
   },
 
@@ -68,8 +108,38 @@ export const services: Record<ServiceSlug, Service> = {
     metaDescription:
       'Planejamento tributário em São Paulo. Análise de regime fiscal, simulação de cenários e estratégias legais para reduzir a carga tributária da sua empresa.',
     h1: 'Planejamento Tributário em São Paulo',
+    hero: {
+      eyebrow: 'Estratégia fiscal',
+      subtitle:
+        'Pagar o que é devido, dentro da lei. Nem mais, nem menos. Análise comparativa com os números reais da sua empresa.',
+      keyFact: {
+        value: '3 regimes',
+        label: 'comparados (Simples, Presumido, Real) com simulação real',
+      },
+      cta: {
+        text: 'Simular meu regime',
+        promise: 'Diagnóstico fundamentado em até 5 dias úteis.',
+      },
+    },
     intro:
       'O planejamento tributário é a análise técnica que define qual regime fiscal (Simples Nacional, Lucro Presumido ou Lucro Real) gera a menor carga tributária para uma empresa específica, considerando faturamento anual, atividade exercida, folha de pagamento, fator R e projeção de crescimento para os próximos exercícios. É um procedimento legal, previsto na própria legislação brasileira, que se diferencia da sonegação por usar mecanismos da Lei Complementar 123/2006 e do Decreto 9.580/2018. Aplica-se a empresas que estão definindo o regime na abertura, que ultrapassaram o limite de R$ 4,8 milhões do Simples Nacional, que mantêm o mesmo enquadramento há mais de um ano sem revisão, ou que mudaram a estrutura societária recentemente. A DM2 Contabilidade atua em São Paulo desde 2003 e faz a simulação comparativa com os números reais da empresa antes de qualquer recomendação. Apresentamos os cenários com fundamentação técnica, o empresário decide.',
+    stakes: [
+      {
+        label: 'Permanência inercial no mesmo regime',
+        detail:
+          'Empresas que não revisam o enquadramento anualmente costumam pagar 15-30% a mais de tributos por ano.',
+      },
+      {
+        label: 'Fator R desconsiderado no Simples',
+        detail:
+          'Atividades de serviço que viram do Anexo III para o V veem a alíquota saltar de ~6% para ~15,5%.',
+      },
+      {
+        label: 'Janela de mudança de regime perdida',
+        detail:
+          'A opção pelo Simples Nacional só é feita em janeiro de cada ano. Sem planejamento, a empresa fica presa ao regime atual.',
+      },
+    ],
     sections: {
       contexto:
         'A legislação tributária brasileira é complexa e muda com frequência. Simples Nacional, Lucro Presumido, Lucro Real: cada regime tem regras próprias, alíquotas diferentes e implicações que variam conforme o faturamento, a atividade e a estrutura da empresa.',
@@ -82,10 +152,9 @@ export const services: Record<ServiceSlug, Service> = {
     },
     processo: [
       'Levantamento dos dados fiscais e financeiros da empresa',
-      'Simulação comparativa entre regimes tributários',
+      'Simulação comparativa entre os 3 regimes tributários',
       'Análise de impacto considerando projeção de crescimento',
-      'Apresentação dos cenários com recomendação fundamentada',
-      'Implementação da mudança, quando aprovada pelo cliente',
+      'Apresentação dos cenários com recomendação fundamentada por escrito',
     ],
     faqs: [
       {
@@ -105,8 +174,22 @@ export const services: Record<ServiceSlug, Service> = {
       },
     ],
     relatedServices: ['consultoria-contabil', 'gestao-fiscal-e-tributaria'],
-    relatedNiches: ['advogados', 'profissionais-da-saude', 'negocios-digitais'],
-    relatedPosts: [],
+    relatedNiches: [
+      'contabilidade-para-advogados',
+      'contabilidade-para-profissionais-da-saude',
+      'contabilidade-para-negocios-digitais',
+    ],
+    relatedPosts: [
+      'simples-nacional-2027-prazos-opcao-ibs-cbs',
+      'reforma-tributaria-prestadores-de-servico-sao-paulo',
+      'ibs-cbs-notas-fiscais-2026-empresas-sao-paulo',
+    ],
+    finalCta: {
+      title: 'Está no regime tributário certo?',
+      subtitle:
+        'Simulação comparativa entre Simples, Presumido e Real com os números reais da sua empresa. Diagnóstico em até 5 dias úteis.',
+      buttonText: 'Simular meu regime',
+    },
     priority: 'maxima',
   },
 
@@ -117,8 +200,38 @@ export const services: Record<ServiceSlug, Service> = {
     metaDescription:
       'Gestão fiscal e tributária em São Paulo. Acompanhamento de obrigações, análise de notas fiscais, apuração de impostos e conformidade fiscal para empresas.',
     h1: 'Gestão Fiscal e Tributária em São Paulo',
+    hero: {
+      eyebrow: 'Rotina fiscal',
+      subtitle:
+        'Apuração, conferência de notas e entrega de obrigações no prazo. Calendário fiscal próprio para a sua empresa, sem multa por descuido.',
+      keyFact: {
+        value: 'Multa 2%/mês',
+        label: 'até 20% por entrega de obrigação acessória fora do prazo',
+      },
+      cta: {
+        text: 'Quero o diagnóstico',
+        promise: 'Auditamos suas últimas 3 entregas em até 24h úteis.',
+      },
+    },
     intro:
       'A gestão fiscal e tributária é o serviço que cuida da rotina mensal de apuração e recolhimento de impostos (ICMS, ISS, PIS, COFINS, IRPJ, CSLL), conferência de notas fiscais emitidas e recebidas, controle de retenções na fonte (IRRF, INSS, ISS retido) e entrega das obrigações acessórias dentro dos prazos legais. Inclui SPED Fiscal, EFD-Contribuições, DCTF, DIRF, DEFIS e demais declarações que variam conforme o regime tributário e a atividade da empresa. A entrega fora do prazo gera multas automáticas que podem chegar a 2% sobre o valor declarado por mês de atraso, com limite de 20%. Erros na classificação fiscal de produtos ou serviços geram autuações com juros e correção monetária. Aplica-se a toda empresa que emite nota fiscal, paga tributos ou tem funcionários registrados. A DM2 Contabilidade atua em São Paulo desde 2003 com calendário fiscal individualizado por cliente e alertas proativos antes de cada vencimento.',
+    stakes: [
+      {
+        label: 'Entrega de obrigação acessória atrasada',
+        detail:
+          'Multa de 2% por mês de atraso sobre o valor declarado, limitada a 20% no total da obrigação.',
+      },
+      {
+        label: 'NF emitida com CFOP, CST ou alíquota errada',
+        detail:
+          'Cancelamento, retrabalho operacional e risco de autuação retroativa com juros e correção monetária.',
+      },
+      {
+        label: 'Retenção na fonte não computada',
+        detail:
+          'Pagamento de tributo em duplicidade no fechamento ou autuação por subdeclaração.',
+      },
+    ],
     sections: {
       contexto:
         'Toda empresa que emite nota fiscal, paga impostos ou tem funcionários precisa manter uma rotina fiscal organizada. Isso inclui apuração mensal de ICMS, ISS, PIS, COFINS, retenções na fonte e uma série de obrigações acessórias que mudam conforme o regime e a atividade.',
@@ -133,8 +246,7 @@ export const services: Record<ServiceSlug, Service> = {
       'Mapeamento das obrigações fiscais da empresa',
       'Configuração de calendário fiscal próprio para cada empresa',
       'Apuração mensal de impostos e contribuições',
-      'Conferência e orientação sobre emissão de notas fiscais',
-      'Entrega de obrigações acessórias nos prazos legais',
+      'Conferência de notas e entrega de obrigações nos prazos legais',
     ],
     faqs: [
       {
@@ -154,8 +266,22 @@ export const services: Record<ServiceSlug, Service> = {
       },
     ],
     relatedServices: ['planejamento-tributario', 'consultoria-contabil'],
-    relatedNiches: ['advogados', 'negocios-digitais'],
-    relatedPosts: [],
+    relatedNiches: [
+      'contabilidade-para-advogados',
+      'contabilidade-para-profissionais-da-saude',
+      'contabilidade-para-negocios-digitais',
+    ],
+    relatedPosts: [
+      'ibs-cbs-notas-fiscais-2026-empresas-sao-paulo',
+      'esocial-2026-novas-aliquotas-previdenciarias-folha',
+      'receita-sintonia-2026-classificacao-fiscal-empresas',
+    ],
+    finalCta: {
+      title: 'Sua rotina fiscal está em ordem?',
+      subtitle:
+        'Auditamos suas últimas 3 entregas e indicamos por escrito o que precisa ser corrigido. Resposta em 24h úteis.',
+      buttonText: 'Quero o diagnóstico',
+    },
     priority: 'alta',
   },
 
@@ -166,8 +292,38 @@ export const services: Record<ServiceSlug, Service> = {
     metaDescription:
       'Abertura e regularização de empresas em São Paulo. Do CNPJ à operação: tipo societário, inscrições, alvarás e regime tributário. Escritório em Vila Mariana.',
     h1: 'Abertura e Regularização de Empresas em São Paulo',
+    hero: {
+      eyebrow: 'Do CNPJ à operação',
+      subtitle:
+        'MEI, ME, SLU ou LTDA. Decisão certa antes do registro, não correção depois — o primeiro ato de planejamento tributário é a abertura.',
+      keyFact: {
+        value: '15 a 45 dias',
+        label: 'do início ao alvará completo, conforme atividade',
+      },
+      cta: {
+        text: 'Quero abrir minha empresa',
+        promise: 'Análise antes de qualquer registro. Conversa em até 24h úteis.',
+      },
+    },
     intro:
       'A abertura de empresas é o processo formal que vai da definição do tipo societário (MEI, ME, LTDA, SLU ou SA) até a emissão do CNPJ, inscrições estadual e municipal, alvará de funcionamento, licença sanitária quando aplicável, e enquadramento no regime tributário (Simples Nacional, Lucro Presumido ou Lucro Real). Em São Paulo, o processo completo costuma levar entre 15 e 45 dias, dependendo da atividade e das licenças exigidas pela prefeitura e órgãos reguladores. A escolha errada de CNAE, tipo societário ou regime fiscal gera tributação acima do necessário, restrições operacionais e dificuldade para mudar depois sem custos. A regularização atende empresas com pendências fiscais, cadastros desatualizados, obrigações em atraso ou alteração de quadro societário. A DM2 Contabilidade atua em São Paulo desde 2003 e analisa o cenário antes de registrar qualquer coisa: orientamos a decisão, escolhemos o CNAE correto e cuidamos de todas as inscrições e licenças necessárias para operar.',
+    stakes: [
+      {
+        label: 'CNAE primário inadequado',
+        detail:
+          'Restringe operações, impede emissão de NF para certas atividades e desclassifica do Simples em alguns casos.',
+      },
+      {
+        label: 'Tipo societário sem proteção patrimonial',
+        detail:
+          'EI e MEI respondem com bens pessoais por dívidas da empresa. SLU e LTDA separam patrimônio.',
+      },
+      {
+        label: 'Regime escolhido sem simulação',
+        detail:
+          'Empresas no regime errado no primeiro ano costumam pagar 2-3x o tributo necessário.',
+      },
+    ],
     sections: {
       contexto:
         'Abrir uma empresa em São Paulo envolve decisões que afetam diretamente a tributação, a responsabilidade dos sócios e a operação do negócio. Tipo societário (MEI, ME, LTDA, SLU), regime tributário, atividades no CNAE, inscrições e licenças. Cada escolha tem consequências.',
@@ -180,10 +336,9 @@ export const services: Record<ServiceSlug, Service> = {
     },
     processo: [
       'Análise do cenário: atividade, faturamento previsto, sócios',
-      'Definição do tipo societário e regime tributário',
+      'Definição do tipo societário, CNAE primário e regime tributário',
       'Registro na Junta Comercial e emissão do CNPJ',
-      'Inscrições estadual e municipal, alvarás e licenças',
-      'Configuração fiscal e início do acompanhamento contábil',
+      'Inscrições estadual e municipal, alvarás e início do acompanhamento',
     ],
     faqs: [
       {
@@ -208,8 +363,17 @@ export const services: Record<ServiceSlug, Service> = {
       },
     ],
     relatedServices: ['consultoria-contabil', 'planejamento-tributario'],
-    relatedNiches: ['negocios-digitais'],
-    relatedPosts: [],
+    relatedNiches: ['contabilidade-para-negocios-digitais', 'contabilidade-para-advogados'],
+    relatedPosts: [
+      'abertura-de-empresa-em-sao-paulo-regime-tributario-2026',
+      'simples-nacional-2027-prazos-opcao-ibs-cbs',
+    ],
+    finalCta: {
+      title: 'Vai abrir empresa em São Paulo?',
+      subtitle:
+        'Antes do registro: tipo societário, CNAE e regime tributário definidos com base na sua atividade real. Conversa em até 24h úteis.',
+      buttonText: 'Falar antes de abrir',
+    },
     priority: 'maxima',
   },
 };

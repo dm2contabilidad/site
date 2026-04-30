@@ -1,5 +1,5 @@
 import type { FAQ } from './faq';
-import type { ServiceSlug } from './service';
+import type { ServiceSlug, PageHero, StakeItem, FinalCta } from './service';
 
 /**
  * Specialty pages — DM2 Contabilidade
@@ -8,9 +8,6 @@ import type { ServiceSlug } from './service';
  *   /contabilidade-para-advogados
  *   /contabilidade-para-profissionais-da-saude
  *   /contabilidade-para-negocios-digitais
- *
- * Each page lives at root level with full keyword slug.
- * No /para/ prefix. No abbreviations.
  */
 
 export type NicheSlug =
@@ -18,6 +15,17 @@ export type NicheSlug =
   | 'contabilidade-para-profissionais-da-saude'
   | 'contabilidade-para-negocios-digitais';
 
+/**
+ * Niche shares the same 9-block page structure as Service. The fields differ
+ * in name from Service.sections to reflect the editorial intent of a niche
+ * (it speaks to the client, not about the service):
+ *   - sections.contexto  → "tu realidad"
+ *   - sections.desafios  → "tus desafíos"
+ *   - sections.solucao   → "cómo DM2 te atiende"
+ * `processo` and `diferencial` mirror Service to allow a single shared
+ * EntityPage component, but the copy must speak to the segment, not to a
+ * generic visitor.
+ */
 export interface Niche {
   slug: NicheSlug;
   title: string;
@@ -25,13 +33,18 @@ export interface Niche {
   metaDescription: string;
   h1: string;
   intro: string;
+  hero: PageHero;
+  stakes: StakeItem[];
   sections: {
     contexto: string;
     desafios: string;
     solucao: string;
   };
+  diferencial: string;
+  processo: string[];
   faqs: FAQ[];
   relatedServices: ServiceSlug[];
   relatedPosts: string[];
+  finalCta: FinalCta;
   priority: 'alta' | 'media';
 }
