@@ -13,6 +13,7 @@ import {
   CLIENT_PORTAL_URL,
   TECHNICAL_REFERENCE,
   WHATSAPP_DISPLAY,
+  buildWhatsappUrl,
   siteConfig,
 } from '@/content/site';
 
@@ -610,7 +611,7 @@ export default function QuemSomosPage() {
                 Entrar em contato
               </Button>
               <Button
-                href={`https://wa.me/${siteConfig.whatsapp}`}
+                href={buildWhatsappUrl()}
                 variant="secondary"
               >
                 WhatsApp

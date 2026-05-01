@@ -8,7 +8,7 @@ import {
   BreadcrumbSchema,
   LocalBusinessSchema,
 } from '@/components/seo/SchemaMarkup';
-import { siteConfig, WHATSAPP_DISPLAY } from '@/content/site';
+import { WHATSAPP_DISPLAY, buildWhatsappUrl, siteConfig } from '@/content/site';
 
 export const metadata = createMetadata({
   title: 'Contato | DM2 Contabilidade em São Paulo',
@@ -152,7 +152,7 @@ export default function ContatoPage() {
                 <h3 className="font-semibold text-neutral-800 mb-1">WhatsApp</h3>
                 <p className="text-neutral-600 mb-2">{WHATSAPP_DISPLAY}</p>
                 <Button
-                  href={`https://wa.me/${siteConfig.whatsapp}`}
+                  href={buildWhatsappUrl()}
                   variant="whatsapp"
                   size="sm"
                   target="_blank"

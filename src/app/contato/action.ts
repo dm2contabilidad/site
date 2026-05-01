@@ -19,11 +19,14 @@ interface SubmitPayload extends LeadFormData {
   honeypot: string;
   origem_pagina: string;
   referrer: string;
+  landing_page: string;
   utm_source: string;
   utm_medium: string;
   utm_campaign: string;
   utm_content: string;
   utm_term: string;
+  gclid: string;
+  fbclid: string;
 }
 
 export async function submitLead(payload: SubmitPayload): Promise<SubmitResult> {
@@ -90,11 +93,14 @@ export async function submitLead(payload: SubmitPayload): Promise<SubmitResult> 
     mensagem: sanitizeText(data.mensagem || '') || null,
     origem_pagina: sanitizeText(payload.origem_pagina) || null,
     referrer: sanitizeText(payload.referrer) || null,
+    landing_page: sanitizeText(payload.landing_page) || null,
     utm_source: sanitizeText(payload.utm_source) || null,
     utm_medium: sanitizeText(payload.utm_medium) || null,
     utm_campaign: sanitizeText(payload.utm_campaign) || null,
     utm_content: sanitizeText(payload.utm_content) || null,
     utm_term: sanitizeText(payload.utm_term) || null,
+    gclid: sanitizeText(payload.gclid) || null,
+    fbclid: sanitizeText(payload.fbclid) || null,
     user_agent: headersList.get('user-agent') || null,
     ip_hash: ipHash,
   };
@@ -119,7 +125,15 @@ export async function submitLead(payload: SubmitPayload): Promise<SubmitResult> 
     servico_interesse: sanitized.servico_interesse,
     mensagem: sanitized.mensagem,
     origem_pagina: sanitized.origem_pagina,
+    landing_page: sanitized.landing_page,
+    referrer: sanitized.referrer,
     utm_source: sanitized.utm_source,
+    utm_medium: sanitized.utm_medium,
+    utm_campaign: sanitized.utm_campaign,
+    utm_content: sanitized.utm_content,
+    utm_term: sanitized.utm_term,
+    gclid: sanitized.gclid,
+    fbclid: sanitized.fbclid,
   });
 
   return { success: true };

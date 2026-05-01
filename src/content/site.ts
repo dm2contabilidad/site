@@ -48,6 +48,23 @@ export const CLIENT_PORTAL_URL = 'https://vip.acessorias.com/dm2contabilidade';
 export const WHATSAPP_DISPLAY = '(11) 95296-3163';
 
 /**
+ * Default WhatsApp opening message — ensures every wa.me link from the
+ * site arrives with context already filled, so the recipient knows the
+ * lead came from the institutional site (not from a generic forward).
+ */
+export const WHATSAPP_DEFAULT_MESSAGE =
+  'Olá! Vim pelo site da DM2 Contabilidade e gostaria de mais informações.';
+
+/**
+ * Build a wa.me URL with the default prefilled message. Single helper so
+ * the message stays consistent across pages — never construct the URL by
+ * hand in components.
+ */
+export function buildWhatsappUrl(message: string = WHATSAPP_DEFAULT_MESSAGE) {
+  return `https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(message)}`;
+}
+
+/**
  * Technical reference for the firm.
  * Danilo is the public technical lead and responsável técnico of the firm.
  * The CRC-SP number belongs to DM2 Contabilidade (the firm), not to Danilo

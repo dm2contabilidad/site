@@ -5,7 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { leadSchema, type LeadFormData } from '@/lib/validation';
-import { getUTMs, getReferrer, captureUTMs } from '@/lib/utm';
+import {
+  captureUTMs,
+  getClickIds,
+  getLandingPage,
+  getReferrer,
+  getUTMs,
+} from '@/lib/utm';
 import { analytics, metaPixel } from '@/lib/analytics';
 import { submitLead, type SubmitResult } from '@/app/contato/action';
 import { Input } from '@/components/ui/Input';
@@ -93,7 +99,9 @@ export function ContactForm() {
     }
 
     const utms = getUTMs();
+    const clickIds = getClickIds();
     const referrer = getReferrer();
+    const landingPage = getLandingPage();
 
     const result: SubmitResult = await submitLead({
       ...data,
@@ -101,11 +109,14 @@ export function ContactForm() {
       honeypot: (document.querySelector<HTMLInputElement>('input[name="website"]'))?.value || '',
       origem_pagina: window.location.pathname,
       referrer: referrer || '',
+      landing_page: landingPage || '',
       utm_source: utms.utm_source || '',
       utm_medium: utms.utm_medium || '',
       utm_campaign: utms.utm_campaign || '',
       utm_content: utms.utm_content || '',
       utm_term: utms.utm_term || '',
+      gclid: clickIds.gclid || '',
+      fbclid: clickIds.fbclid || '',
     });
 
     if (result.success) {

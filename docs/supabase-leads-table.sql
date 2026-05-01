@@ -16,13 +16,16 @@ CREATE TABLE IF NOT EXISTS leads (
   mensagem        TEXT,
 
   -- Origin metadata
-  origem_pagina   TEXT,
-  referrer        TEXT,
+  origem_pagina   TEXT, -- pathname where the form was submitted
+  referrer        TEXT, -- document.referrer captured on first session load
+  landing_page    TEXT, -- full URL of the first page hit in the session
   utm_source      TEXT,
   utm_medium      TEXT,
   utm_campaign    TEXT,
   utm_content     TEXT,
   utm_term        TEXT,
+  gclid           TEXT, -- Google Ads click ID
+  fbclid          TEXT, -- Meta Ads click ID
   user_agent      TEXT,
   ip_hash         TEXT,
 
@@ -67,3 +70,15 @@ CREATE POLICY "Allow anonymous insert" ON leads
 
 -- No SELECT policy for anon = leads cannot be read from frontend
 -- Leads are viewed only from Supabase Dashboard or with service_role key
+
+-- =============================================
+-- Migration block — safe to re-run
+-- Adds the marketing attribution columns to an existing leads table.
+-- The CREATE TABLE above already includes them; this block is for
+-- environments where the table already exists from an earlier version.
+-- =============================================
+
+ALTER TABLE leads
+  ADD COLUMN IF NOT EXISTS landing_page TEXT,
+  ADD COLUMN IF NOT EXISTS gclid        TEXT,
+  ADD COLUMN IF NOT EXISTS fbclid       TEXT;
