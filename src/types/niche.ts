@@ -1,5 +1,12 @@
 import type { FAQ } from './faq';
-import type { ServiceSlug, PageHero, StakeItem, FinalCta } from './service';
+import type {
+  ServiceSlug,
+  PageHero,
+  HeroImage,
+  StakeItem,
+  FinalCta,
+  ContextPoint,
+} from './service';
 
 /**
  * Specialty pages — DM2 Contabilidade
@@ -34,10 +41,10 @@ export interface Niche {
   h1: string;
   intro: string;
   hero: PageHero;
+  heroImage?: HeroImage;
+  contextPoints: ContextPoint[];
   stakes: StakeItem[];
   sections: {
-    contexto: string;
-    desafios: string;
     solucao: string;
   };
   diferencial: string;

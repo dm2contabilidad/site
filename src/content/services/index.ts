@@ -25,17 +25,21 @@ export const services: Record<ServiceSlug, Service> = {
         'Não é só entregar guias. É ler os números da sua empresa todo mês e orientar decisões antes que virem problema.',
       keyFact: { value: '+22 anos', label: 'atendendo empresas em São Paulo' },
       cta: {
-        text: 'Quero a análise inicial',
+        text: 'Entrar em contato',
         promise: 'Análise sem custo. Resposta em 24h úteis.',
       },
     },
+    heroImage: {
+      src: '/images/photos/danilo-brito-de-morais.webp',
+      alt: 'Contador responsável técnico da DM2 Contabilidade, escritório de consultoria contábil em São Paulo',
+    },
     intro:
-      'A consultoria contábil é o serviço de acompanhamento mensal que combina escrituração, análise dos números do negócio e orientação técnica para a tomada de decisões empresariais. Diferente da contabilidade tradicional, que se limita a entregar guias e obrigações acessórias, a consultoria atua de forma ativa: revisa o enquadramento tributário (Simples Nacional, Lucro Presumido ou Lucro Real), monitora margem, custos e indicadores do DRE, alerta sobre prazos do SPED Contábil, DCTF, EFD-Contribuições e DIRF, e indica caminhos para reduzir a carga fiscal dentro da lei. Aplica-se a empresas de pequeno e médio porte que precisam usar a contabilidade como ferramenta de gestão, não apenas como obrigação burocrática. A DM2 Contabilidade atua em Vila Mariana, São Paulo, desde 2003, com mais de 22 anos de experiência atendendo empresas em diferentes setores. Cada cliente tem acompanhamento individualizado e relatórios mensais com orientações práticas. Nada é processado em massa.',
+      'A consultoria contábil é o serviço de acompanhamento mensal que combina escrituração, análise dos números do negócio e orientação técnica para a tomada de decisões empresariais. Diferente da contabilidade tradicional, que se limita a entregar guias e obrigações acessórias, a consultoria atua de forma ativa: revisa o enquadramento tributário (**Simples Nacional, Lucro Presumido ou Lucro Real**), monitora margem, custos e indicadores do DRE, alerta sobre prazos do SPED Contábil, DCTF, EFD-Contribuições e DIRF, e indica caminhos para reduzir a carga fiscal dentro da lei. Aplica-se a empresas de pequeno e médio porte que precisam usar a contabilidade como ferramenta de gestão, não apenas como obrigação burocrática. A DM2 Contabilidade atua em Vila Mariana, São Paulo, desde 2003, com **mais de 22 anos** de experiência atendendo empresas em diferentes setores. Cada cliente tem acompanhamento individualizado e relatórios mensais com orientações práticas. Nada é processado em massa.',
     stakes: [
       {
         label: 'Regime tributário inadequado',
         detail:
-          'Empresas no enquadramento errado pagam até 30% a mais de imposto por ano sem necessidade técnica.',
+          'Empresas no enquadramento errado pagam até **30% a mais** de imposto por ano sem necessidade técnica.',
       },
       {
         label: 'Prazo de obrigação acessória perdido',
@@ -48,13 +52,23 @@ export const services: Record<ServiceSlug, Service> = {
           'Distribuição de lucros, pró-labore e investimentos definidos no escuro geram retrabalho fiscal e exposição.',
       },
     ],
+    contextPoints: [
+      {
+        title: 'Contabilidade é ferramenta de gestão',
+        body: 'Bem feita, mostra o que está funcionando, o que está custando caro e onde existem oportunidades. Não é só pasta de obrigações entregues.',
+      },
+      {
+        title: 'Sem orientação ativa, há custo',
+        body: 'Empresas pagam mais imposto do que precisam, perdem prazos com **multa automática** e tomam decisões financeiras sem informação suficiente.',
+      },
+      {
+        title: 'Contador que só entrega guias não basta',
+        body: 'Quando o acompanhamento é apenas operacional, o número da empresa fica invisível para quem decide. A consultoria muda esse jogo.',
+      },
+    ],
     sections: {
-      contexto:
-        'Muitas empresas tratam a contabilidade como uma obrigação burocrática: entregam documentos todo mês e esperam que tudo esteja em dia. Mas a contabilidade bem feita é uma ferramenta de gestão. Ela mostra o que está funcionando, o que está custando caro e onde estão as oportunidades.',
-      problema:
-        'Sem orientação contábil ativa, empresas pagam mais impostos do que precisam, perdem prazos que geram multas, e tomam decisões financeiras sem informação suficiente. O contador que só entrega guias não resolve isso.',
       solucao:
-        'Na DM2 Contabilidade, cada cliente tem acompanhamento contábil mensal com análise real. Revisamos enquadramento tributário, acompanhamos obrigações acessórias, e orientamos sobre decisões que afetam o caixa, antes que virem problemas.',
+        'Na DM2 Contabilidade, cada cliente tem **acompanhamento contábil mensal** com análise real. Revisamos enquadramento tributário, acompanhamos obrigações acessórias, e orientamos sobre decisões que afetam o caixa, antes que virem problemas.',
       diferencial:
         'Estamos em São Paulo desde 2003. Não somos um escritório que processa documentos em massa. Conhecemos cada cliente pelo nome, entendemos cada operação, e trabalhamos com a atenção que a contabilidade séria exige.',
     },
@@ -96,7 +110,7 @@ export const services: Record<ServiceSlug, Service> = {
       title: 'Sua empresa precisa de consultoria contábil de verdade?',
       subtitle:
         'Análise sem custo da situação atual e parecer escrito sobre o que deveria mudar. Resposta em 24h úteis.',
-      buttonText: 'Quero a análise',
+      buttonText: 'Entrar em contato',
     },
     priority: 'maxima',
   },
@@ -117,22 +131,26 @@ export const services: Record<ServiceSlug, Service> = {
         label: 'comparados (Simples, Presumido, Real) com simulação real',
       },
       cta: {
-        text: 'Simular meu regime',
+        text: 'Entrar em contato',
         promise: 'Diagnóstico fundamentado em até 5 dias úteis.',
       },
     },
+    heroImage: {
+      src: '/images/photos/planejamento-tributario-em-sao-paulo.webp',
+      alt: 'Planejamento tributário para empresas em São Paulo, análise comparativa de regimes fiscais conduzida pela DM2 Contabilidade',
+    },
     intro:
-      'O planejamento tributário é a análise técnica que define qual regime fiscal (Simples Nacional, Lucro Presumido ou Lucro Real) gera a menor carga tributária para uma empresa específica, considerando faturamento anual, atividade exercida, folha de pagamento, fator R e projeção de crescimento para os próximos exercícios. É um procedimento legal, previsto na própria legislação brasileira, que se diferencia da sonegação por usar mecanismos da Lei Complementar 123/2006 e do Decreto 9.580/2018. Aplica-se a empresas que estão definindo o regime na abertura, que ultrapassaram o limite de R$ 4,8 milhões do Simples Nacional, que mantêm o mesmo enquadramento há mais de um ano sem revisão, ou que mudaram a estrutura societária recentemente. A DM2 Contabilidade atua em São Paulo desde 2003 e faz a simulação comparativa com os números reais da empresa antes de qualquer recomendação. Apresentamos os cenários com fundamentação técnica, o empresário decide.',
+      'O planejamento tributário é a análise técnica que define qual regime fiscal (**Simples Nacional, Lucro Presumido ou Lucro Real**) gera a menor carga tributária para uma empresa específica, considerando faturamento anual, atividade exercida, folha de pagamento, fator R e projeção de crescimento para os próximos exercícios. É um procedimento legal, previsto na própria legislação brasileira, que se diferencia da sonegação por usar mecanismos da Lei Complementar 123/2006 e do Decreto 9.580/2018. Aplica-se a empresas que estão definindo o regime na abertura, que ultrapassaram o limite de **R$ 4,8 milhões do Simples Nacional**, que mantêm o mesmo enquadramento há mais de um ano sem revisão, ou que mudaram a estrutura societária recentemente. A DM2 Contabilidade atua em São Paulo desde 2003 e faz a simulação comparativa com os números reais da empresa antes de qualquer recomendação. Apresentamos os cenários com fundamentação técnica, o empresário decide.',
     stakes: [
       {
         label: 'Permanência inercial no mesmo regime',
         detail:
-          'Empresas que não revisam o enquadramento anualmente costumam pagar 15-30% a mais de tributos por ano.',
+          'Empresas que não revisam o enquadramento anualmente costumam pagar **15-30% a mais** de tributos por ano.',
       },
       {
         label: 'Fator R desconsiderado no Simples',
         detail:
-          'Atividades de serviço que viram do Anexo III para o V veem a alíquota saltar de ~6% para ~15,5%.',
+          'Atividades de serviço que viram do Anexo III para o V veem a alíquota saltar de ~6% para **~15,5%**.',
       },
       {
         label: 'Janela de mudança de regime perdida',
@@ -140,11 +158,21 @@ export const services: Record<ServiceSlug, Service> = {
           'A opção pelo Simples Nacional só é feita em janeiro de cada ano. Sem planejamento, a empresa fica presa ao regime atual.',
       },
     ],
+    contextPoints: [
+      {
+        title: 'Três regimes, três lógicas',
+        body: '**Simples Nacional, Lucro Presumido e Lucro Real** têm alíquotas e regras próprias. A escolha depende de faturamento, atividade exercida e estrutura societária.',
+      },
+      {
+        title: 'Permanência inercial custa caro',
+        body: 'Empresas que mantêm o mesmo enquadramento por anos sem revisão costumam pagar mais imposto do que o necessário, mesmo dentro da legalidade.',
+      },
+      {
+        title: 'Simples nem sempre é o mais econômico',
+        body: 'Para certas atividades e margens, o **Lucro Presumido** entrega menos imposto. Sem simulação com números reais, a decisão fica no automático.',
+      },
+    ],
     sections: {
-      contexto:
-        'A legislação tributária brasileira é complexa e muda com frequência. Simples Nacional, Lucro Presumido, Lucro Real: cada regime tem regras próprias, alíquotas diferentes e implicações que variam conforme o faturamento, a atividade e a estrutura da empresa.',
-      problema:
-        'Muitas empresas permanecem no mesmo regime tributário por anos sem revisar se ainda é o mais vantajoso. Outras abrem no Simples Nacional por simplicidade, mesmo quando o Lucro Presumido seria mais econômico. Sem planejamento, a empresa paga mais do que precisa.',
       solucao:
         'Na DM2 Contabilidade, fazemos a simulação comparativa entre regimes, considerando faturamento, folha de pagamento, atividade e projeção de crescimento. Apresentamos os cenários com números claros para que o empresário tome a decisão informada.',
       diferencial:
@@ -188,7 +216,7 @@ export const services: Record<ServiceSlug, Service> = {
       title: 'Está no regime tributário certo?',
       subtitle:
         'Simulação comparativa entre Simples, Presumido e Real com os números reais da sua empresa. Diagnóstico em até 5 dias úteis.',
-      buttonText: 'Simular meu regime',
+      buttonText: 'Entrar em contato',
     },
     priority: 'maxima',
   },
@@ -209,17 +237,21 @@ export const services: Record<ServiceSlug, Service> = {
         label: 'até 20% por entrega de obrigação acessória fora do prazo',
       },
       cta: {
-        text: 'Quero o diagnóstico',
+        text: 'Entrar em contato',
         promise: 'Auditamos suas últimas 3 entregas em até 24h úteis.',
       },
     },
+    heroImage: {
+      src: '/images/photos/gestao-fiscal-e-tributaria-em-sao-paulo.webp',
+      alt: 'Gestão fiscal e tributária para empresas em São Paulo, rotina mensal de apuração e obrigações conduzida pela DM2 Contabilidade',
+    },
     intro:
-      'A gestão fiscal e tributária é o serviço que cuida da rotina mensal de apuração e recolhimento de impostos (ICMS, ISS, PIS, COFINS, IRPJ, CSLL), conferência de notas fiscais emitidas e recebidas, controle de retenções na fonte (IRRF, INSS, ISS retido) e entrega das obrigações acessórias dentro dos prazos legais. Inclui SPED Fiscal, EFD-Contribuições, DCTF, DIRF, DEFIS e demais declarações que variam conforme o regime tributário e a atividade da empresa. A entrega fora do prazo gera multas automáticas que podem chegar a 2% sobre o valor declarado por mês de atraso, com limite de 20%. Erros na classificação fiscal de produtos ou serviços geram autuações com juros e correção monetária. Aplica-se a toda empresa que emite nota fiscal, paga tributos ou tem funcionários registrados. A DM2 Contabilidade atua em São Paulo desde 2003 com calendário fiscal individualizado por cliente e alertas proativos antes de cada vencimento.',
+      'A gestão fiscal e tributária é o serviço que cuida da rotina mensal de apuração e recolhimento de impostos (**ICMS, ISS, PIS, COFINS, IRPJ, CSLL**), conferência de notas fiscais emitidas e recebidas, controle de retenções na fonte (IRRF, INSS, ISS retido) e entrega das obrigações acessórias dentro dos prazos legais. Inclui SPED Fiscal, EFD-Contribuições, DCTF, DIRF, DEFIS e demais declarações que variam conforme o regime tributário e a atividade da empresa. A entrega fora do prazo gera **multas automáticas que podem chegar a 2% sobre o valor declarado por mês de atraso**, com limite de 20%. Erros na classificação fiscal de produtos ou serviços geram autuações com juros e correção monetária. Aplica-se a toda empresa que emite nota fiscal, paga tributos ou tem funcionários registrados. A DM2 Contabilidade atua em São Paulo desde 2003 com calendário fiscal individualizado por cliente e alertas proativos antes de cada vencimento.',
     stakes: [
       {
         label: 'Entrega de obrigação acessória atrasada',
         detail:
-          'Multa de 2% por mês de atraso sobre o valor declarado, limitada a 20% no total da obrigação.',
+          '**Multa de 2% por mês** de atraso sobre o valor declarado, limitada a 20% no total da obrigação.',
       },
       {
         label: 'NF emitida com CFOP, CST ou alíquota errada',
@@ -232,11 +264,21 @@ export const services: Record<ServiceSlug, Service> = {
           'Pagamento de tributo em duplicidade no fechamento ou autuação por subdeclaração.',
       },
     ],
+    contextPoints: [
+      {
+        title: 'Rotina fiscal mensal sem pausa',
+        body: 'Apuração de **ICMS, ISS, PIS, COFINS**, retenções na fonte e obrigações acessórias mudam conforme o regime e a atividade da empresa.',
+      },
+      {
+        title: 'Erro na apuração vira multa',
+        body: 'Imposto calculado errado, NF emitida com classificação fiscal incorreta ou obrigação entregue fora do prazo geram penalidade automática.',
+      },
+      {
+        title: 'O custo se acumula em silêncio',
+        body: 'Quando a gestão fiscal não é acompanhada de perto, o passivo cresce até aparecer em uma fiscalização ou no encerramento do exercício.',
+      },
+    ],
     sections: {
-      contexto:
-        'Toda empresa que emite nota fiscal, paga impostos ou tem funcionários precisa manter uma rotina fiscal organizada. Isso inclui apuração mensal de ICMS, ISS, PIS, COFINS, retenções na fonte e uma série de obrigações acessórias que mudam conforme o regime e a atividade.',
-      problema:
-        'Erros na apuração de impostos geram multas. Notas fiscais emitidas com erro geram retrabalho. Obrigações entregues fora do prazo geram penalidades. E tudo isso se acumula quando a gestão fiscal não é acompanhada de perto.',
       solucao:
         'A DM2 Contabilidade cuida de toda a rotina fiscal da sua empresa: da apuração à entrega, da conferência de notas ao acompanhamento de prazos. Você opera, a gente garante que o fiscal está em ordem.',
       diferencial:
@@ -280,7 +322,7 @@ export const services: Record<ServiceSlug, Service> = {
       title: 'Sua rotina fiscal está em ordem?',
       subtitle:
         'Auditamos suas últimas 3 entregas e indicamos por escrito o que precisa ser corrigido. Resposta em 24h úteis.',
-      buttonText: 'Quero o diagnóstico',
+      buttonText: 'Entrar em contato',
     },
     priority: 'alta',
   },
@@ -295,18 +337,22 @@ export const services: Record<ServiceSlug, Service> = {
     hero: {
       eyebrow: 'Do CNPJ à operação',
       subtitle:
-        'MEI, ME, SLU ou LTDA. Decisão certa antes do registro, não correção depois — o primeiro ato de planejamento tributário é a abertura.',
+        'MEI, ME, SLU ou LTDA. Decisão certa antes do registro, não correção depois. O primeiro ato de planejamento tributário é a abertura.',
       keyFact: {
         value: '15 a 45 dias',
         label: 'do início ao alvará completo, conforme atividade',
       },
       cta: {
-        text: 'Quero abrir minha empresa',
+        text: 'Entrar em contato',
         promise: 'Análise antes de qualquer registro. Conversa em até 24h úteis.',
       },
     },
+    heroImage: {
+      src: '/images/photos/abertura-e-regularizacao-de-empresas-em-sao-paulo.webp',
+      alt: 'Abertura e regularização de empresas em São Paulo, processo de constituição e licenciamento conduzido pela DM2 Contabilidade',
+    },
     intro:
-      'A abertura de empresas é o processo formal que vai da definição do tipo societário (MEI, ME, LTDA, SLU ou SA) até a emissão do CNPJ, inscrições estadual e municipal, alvará de funcionamento, licença sanitária quando aplicável, e enquadramento no regime tributário (Simples Nacional, Lucro Presumido ou Lucro Real). Em São Paulo, o processo completo costuma levar entre 15 e 45 dias, dependendo da atividade e das licenças exigidas pela prefeitura e órgãos reguladores. A escolha errada de CNAE, tipo societário ou regime fiscal gera tributação acima do necessário, restrições operacionais e dificuldade para mudar depois sem custos. A regularização atende empresas com pendências fiscais, cadastros desatualizados, obrigações em atraso ou alteração de quadro societário. A DM2 Contabilidade atua em São Paulo desde 2003 e analisa o cenário antes de registrar qualquer coisa: orientamos a decisão, escolhemos o CNAE correto e cuidamos de todas as inscrições e licenças necessárias para operar.',
+      'A abertura de empresas é o processo formal que vai da definição do tipo societário (**MEI, ME, LTDA, SLU ou SA**) até a emissão do CNPJ, inscrições estadual e municipal, alvará de funcionamento, licença sanitária quando aplicável, e enquadramento no regime tributário (Simples Nacional, Lucro Presumido ou Lucro Real). Em São Paulo, o processo completo costuma levar **entre 15 e 45 dias**, dependendo da atividade e das licenças exigidas pela prefeitura e órgãos reguladores. A escolha errada de CNAE, tipo societário ou regime fiscal gera tributação acima do necessário, restrições operacionais e dificuldade para mudar depois sem custos. A regularização atende empresas com pendências fiscais, cadastros desatualizados, obrigações em atraso ou alteração de quadro societário. A DM2 Contabilidade atua em São Paulo desde 2003 e analisa o cenário antes de registrar qualquer coisa: orientamos a decisão, escolhemos o CNAE correto e cuidamos de todas as inscrições e licenças necessárias para operar.',
     stakes: [
       {
         label: 'CNAE primário inadequado',
@@ -316,19 +362,29 @@ export const services: Record<ServiceSlug, Service> = {
       {
         label: 'Tipo societário sem proteção patrimonial',
         detail:
-          'EI e MEI respondem com bens pessoais por dívidas da empresa. SLU e LTDA separam patrimônio.',
+          'EI e MEI respondem com **bens pessoais** por dívidas da empresa. SLU e LTDA separam patrimônio.',
       },
       {
         label: 'Regime escolhido sem simulação',
         detail:
-          'Empresas no regime errado no primeiro ano costumam pagar 2-3x o tributo necessário.',
+          'Empresas no regime errado no primeiro ano costumam pagar **2-3x o tributo necessário**.',
+      },
+    ],
+    contextPoints: [
+      {
+        title: 'Cada decisão de abertura tem consequência',
+        body: 'Tipo societário (**MEI, ME, LTDA, SLU**), regime tributário, CNAE e inscrições afetam diretamente a tributação e a responsabilidade dos sócios.',
+      },
+      {
+        title: 'Enquadramento errado restringe a operação',
+        body: 'CNAE inadequado pode impedir a emissão de NF para certas atividades. Tipo societário inadequado expõe o patrimônio do sócio a dívidas da empresa.',
+      },
+      {
+        title: 'Corrigir depois custa tempo e dinheiro',
+        body: 'Trocar de regime, atualizar CNAE ou alterar tipo societário tem prazos legais e custos operacionais que poderiam ser evitados na origem.',
       },
     ],
     sections: {
-      contexto:
-        'Abrir uma empresa em São Paulo envolve decisões que afetam diretamente a tributação, a responsabilidade dos sócios e a operação do negócio. Tipo societário (MEI, ME, LTDA, SLU), regime tributário, atividades no CNAE, inscrições e licenças. Cada escolha tem consequências.',
-      problema:
-        'Muitos empresários abrem a empresa sem orientação e acabam com um enquadramento errado, um CNAE que limita suas operações, ou um regime tributário que cobra mais do que deveria. Corrigir depois custa tempo e dinheiro.',
       solucao:
         'Na DM2 Contabilidade, analisamos o cenário antes de registrar qualquer coisa. Orientamos sobre o tipo societário mais adequado, escolhemos os CNAEs corretos, definimos o melhor regime tributário e cuidamos de todas as inscrições e licenças necessárias para operar em São Paulo.',
       diferencial:
@@ -372,7 +428,7 @@ export const services: Record<ServiceSlug, Service> = {
       title: 'Vai abrir empresa em São Paulo?',
       subtitle:
         'Antes do registro: tipo societário, CNAE e regime tributário definidos com base na sua atividade real. Conversa em até 24h úteis.',
-      buttonText: 'Falar antes de abrir',
+      buttonText: 'Entrar em contato',
     },
     priority: 'maxima',
   },

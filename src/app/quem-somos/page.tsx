@@ -93,10 +93,10 @@ export default function QuemSomosPage() {
       {/* Hero institucional con foto de la fachada do escritório.
           Família visual do home (imagem + dual overlay navy + texto white
           + accent gold + hairline gold no bottom), com composição própria:
-          altura menor (60-70vh em vez de 80-92vh), texto ancorado ao
-          fundo, breadcrumb fixo no topo. Diferencia /quem-somos como
-          página institucional secundária sem clonar a landing. */}
-      <section className="relative min-h-[60vh] md:min-h-[70vh] flex items-end overflow-hidden bg-navy-900">
+          altura padrão da família (70-80vh, alinhada com o hero de
+          consultoria-contabil), texto ancorado ao fundo, breadcrumb fixo
+          no topo. */}
+      <section className="relative min-h-[70vh] md:min-h-[80vh] flex items-end overflow-hidden bg-navy-900">
         <Image
           src="/images/photos/fachada-predio-dm2-contabilidade.webp"
           alt="Fachada do prédio onde fica o escritório da DM2 Contabilidade, na Rua Vergueiro, 3086, Vila Mariana, São Paulo"
@@ -162,6 +162,19 @@ export default function QuemSomosPage() {
                 tecnicamente por {TECHNICAL_REFERENCE.name}, contador
                 responsável.
               </p>
+              <div className="mt-8 md:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center">
+                <Button
+                  href="/contato"
+                  variant="gold"
+                  size="lg"
+                  className="w-full sm:w-auto"
+                >
+                  Entrar em contato
+                </Button>
+                <p className="text-sm text-white/75 leading-snug max-w-xs">
+                  Atendimento direto, sem intermediário comercial. Resposta em 24h úteis.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -449,34 +462,29 @@ export default function QuemSomosPage() {
             >
               Para que tipo de empresa a DM2 Contabilidade faz sentido
             </h2>
-            <div className="space-y-4 text-white/85 leading-relaxed">
-              <p>
-                A DM2 Contabilidade trabalha com empresas de pequeno e médio porte em São Paulo
-                que precisam da contabilidade como apoio ativo de gestão, e não
-                apenas como obrigação burocrática. O perfil mais comum entre
-                clientes inclui:
-              </p>
-              <ul className="space-y-3 pl-1">
+            <div className="text-white/85 leading-relaxed">
+              {/* Lista institucional: pleca vertical hairline gold à esquerda
+                  de cada ítem (em vez de bullet redondo). Leitura editorial,
+                  sem ornamento. A pleca acompanha a altura da linha do texto
+                  via self-stretch, criando ritmo vertical contínuo. */}
+              <ul className="space-y-6 md:space-y-7">
                 {[
-                  'Empresas no Simples Nacional, Lucro Presumido ou Lucro Real que querem revisar enquadramento e ajustar carga tributária dentro da lei.',
-                  'Profissionais liberais regulamentados (advogados, profissionais da saúde, consultores) que operam com sociedade própria.',
-                  'Negócios digitais e de serviços B2B que precisam adequar contratos e regime à transição da reforma tributária entre 2026 e 2033.',
-                  'Empresas em fase de abertura, regularização ou alteração societária em São Paulo.',
+                  'Empresas no Simples Nacional, Lucro Presumido ou Lucro Real que querem revisar enquadramento dentro da lei.',
+                  'Profissionais liberais regulamentados (advogados, área da saúde, consultores) com sociedade própria.',
+                  'Negócios digitais e serviços B2B preparando a transição da reforma tributária entre 2026 e 2033.',
+                  'Empresas em abertura, regularização ou alteração societária em São Paulo.',
                 ].map((item) => (
-                  <li key={item} className="flex gap-3">
+                  <li key={item} className="flex gap-5">
                     <span
                       aria-hidden="true"
-                      className="mt-2.5 inline-block w-1.5 h-1.5 rounded-full bg-gold-500 flex-shrink-0"
+                      className="w-px shrink-0 self-stretch bg-gold-500/55"
                     />
-                    <span>{item}</span>
+                    <span className="text-[15px] md:text-base">{item}</span>
                   </li>
                 ))}
               </ul>
-              <p>
-                A escala atual da operação favorece relações de longo prazo, com
-                ciclo mensal estável e atenção real por cliente. Não é um modelo
-                voltado para volume nem para o menor preço pontual de mercado. É
-                um modelo voltado para leitura técnica e continuidade.
+              <p className="mt-10 md:mt-12 pt-6 border-t border-white/10 text-[15px] md:text-base text-white/70 max-w-2xl">
+                Modelo voltado para relações de longo prazo, com ciclo mensal estável e atenção real por cliente. Não é volume nem menor preço pontual.
               </p>
             </div>
           </div>
@@ -599,7 +607,7 @@ export default function QuemSomosPage() {
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Button href="/contato" variant="primary">
-                Falar com a DM2 Contabilidade
+                Entrar em contato
               </Button>
               <Button
                 href={`https://wa.me/${siteConfig.whatsapp}`}

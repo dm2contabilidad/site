@@ -120,7 +120,7 @@ export default async function HomePage() {
                 className="text-[2rem] sm:text-[2.625rem] md:text-[3.25rem] lg:text-[3.75rem] font-bold text-white tracking-tight leading-[1.1]"
                 style={{ fontFamily: 'var(--font-display)' }}
               >
-                Escritório de contabilidade{' '}
+                Contabilidade estratégica{' '}
                 <span className="text-gold-500">em São Paulo</span>
               </h1>
               <p className="mt-5 md:mt-7 text-base sm:text-lg md:text-xl text-white/85 leading-relaxed max-w-2xl">
@@ -135,7 +135,7 @@ export default async function HomePage() {
                   size="lg"
                   className="w-full sm:w-auto"
                 >
-                  Fale com um contador
+                  Entrar em contato
                 </Button>
                 <Button
                   href="/servicos-contabeis"
@@ -723,7 +723,7 @@ export default async function HomePage() {
       <CTAStrip
         title="Sua empresa merece um contador presente."
         subtitle="Em São Paulo, com atendimento próximo, técnico e responsável desde 2003."
-        buttonText="Fale com a DM2 Contabilidade"
+        buttonText="Entrar em contato"
       />
     </>
   );

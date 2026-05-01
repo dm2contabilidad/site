@@ -92,71 +92,98 @@ export function Header() {
                 Quem Somos
               </Link>
 
-              {/* Serviços Contábeis dropdown */}
+              {/* Serviços Contábeis — link real ao hub + dropdown em hover/focus */}
               <div
                 className="relative"
                 onMouseEnter={() => setServicesOpen(true)}
                 onMouseLeave={() => setServicesOpen(false)}
+                onFocus={() => setServicesOpen(true)}
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                    setServicesOpen(false);
+                  }
+                }}
               >
-                <button
+                <Link
+                  href="/servicos-contabeis"
                   className="px-3 py-2 text-sm font-medium text-navy-900 hover:text-navy-800 transition-colors flex items-center gap-1"
+                  aria-haspopup="menu"
                   aria-expanded={servicesOpen}
-                  aria-haspopup="true"
                 >
                   Serviços Contábeis
-                  <svg className={`w-3.5 h-3.5 transition-transform ${servicesOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg
+                    aria-hidden="true"
+                    className={`w-3.5 h-3.5 transition-transform ${servicesOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
                     <path d="m6 9 6 6 6-6" />
                   </svg>
-                </button>
+                </Link>
                 {servicesOpen && (
                   <div className="absolute top-full left-0 pt-2">
-                    <div className="bg-white rounded-lg shadow-xl border border-[color:var(--color-border-soft)] py-2 min-w-[280px]">
+                    <div
+                      role="menu"
+                      className="bg-white rounded-lg shadow-xl border border-[color:var(--color-border-soft)] py-2 min-w-[300px]"
+                    >
                       {NAV_SERVICES.map((item) => (
                         <Link
                           key={item.slug}
                           href={`/servicos-contabeis/${item.slug}`}
-                          className="block px-4 py-2.5 text-sm text-navy-900 hover:bg-navy-50 hover:text-navy-800 transition-colors"
+                          role="menuitem"
+                          className="block whitespace-nowrap px-4 py-2.5 text-sm text-navy-900 hover:bg-navy-50 hover:text-navy-800 transition-colors"
                         >
                           {item.label}
                         </Link>
                       ))}
-                      <div className="border-t border-[color:var(--color-border-soft)] mt-1 pt-1">
-                        <Link
-                          href="/servicos-contabeis"
-                          className="block px-4 py-2.5 text-sm font-semibold text-navy-800 hover:bg-navy-50 transition-colors"
-                        >
-                          Ver todos os serviços →
-                        </Link>
-                      </div>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Especialidades dropdown */}
+              {/* Especialidades — botão (não há hub /especialidades) + dropdown em hover/focus */}
               <div
                 className="relative"
                 onMouseEnter={() => setNichesOpen(true)}
                 onMouseLeave={() => setNichesOpen(false)}
+                onFocus={() => setNichesOpen(true)}
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                    setNichesOpen(false);
+                  }
+                }}
               >
                 <button
                   className="px-3 py-2 text-sm font-medium text-navy-900 hover:text-navy-800 transition-colors flex items-center gap-1"
                   aria-expanded={nichesOpen}
-                  aria-haspopup="true"
+                  aria-haspopup="menu"
                 >
                   Especialidades
-                  <svg className={`w-3.5 h-3.5 transition-transform ${nichesOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg
+                    aria-hidden="true"
+                    className={`w-3.5 h-3.5 transition-transform ${nichesOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
                     <path d="m6 9 6 6 6-6" />
                   </svg>
                 </button>
                 {nichesOpen && (
                   <div className="absolute top-full left-0 pt-2">
-                    <div className="bg-white rounded-lg shadow-xl border border-[color:var(--color-border-soft)] py-2 min-w-[260px]">
+                    <div
+                      role="menu"
+                      className="bg-white rounded-lg shadow-xl border border-[color:var(--color-border-soft)] py-2 min-w-[360px]"
+                    >
                       {NAV_NICHES.map((item) => (
                         <Link
                           key={item.href}
                           href={item.href}
-                          className="block px-4 py-2.5 text-sm text-navy-900 hover:bg-navy-50 hover:text-navy-800 transition-colors"
+                          role="menuitem"
+                          className="block whitespace-nowrap px-4 py-2.5 text-sm text-navy-900 hover:bg-navy-50 hover:text-navy-800 transition-colors"
                         >
                           {item.label}
                         </Link>
@@ -236,6 +263,13 @@ export function Header() {
                       {item.label}
                     </Link>
                   ))}
+                  <Link
+                    href="/servicos-contabeis"
+                    onClick={closeMobile}
+                    className="block py-2.5 text-sm font-semibold text-navy-800 hover:text-gold-600"
+                  >
+                    Ver todos os serviços →
+                  </Link>
                 </div>
               )}
             </div>
@@ -276,7 +310,7 @@ export function Header() {
                 onClick={closeMobile}
                 className="block w-full text-center py-3 bg-gold-500 text-navy-900 rounded-md font-semibold hover:bg-gold-600 hover:text-white transition-colors"
               >
-                Fale com a DM2 Contabilidade
+                Entrar em contato
               </Link>
               <a
                 href={CLIENT_PORTAL_URL}

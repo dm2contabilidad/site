@@ -136,8 +136,13 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         />
       )}
 
-      {/* Editorial hero with Ibirapuera background */}
-      <header className="relative isolate overflow-hidden bg-navy-900 text-white">
+      {/* Editorial hero with Ibirapuera background.
+          Padronizado com a família visual dos heroes do sistema (referência:
+          consultoria-contabil): altura 70-80vh, breadcrumb ancorado ao topo
+          via absolute, conteúdo ancorado ao fundo via flex items-end +
+          pb-14/20, mesmas distâncias entre overline / H1 / subtítulo.
+          Overlay e imagem mantidos como estavam. */}
+      <header className="relative min-h-[70vh] md:min-h-[80vh] flex items-center isolate overflow-hidden bg-navy-900 text-white">
         <Image
           src="/images/blog/blog-header-ibirapuera.webp"
           alt=""
@@ -156,39 +161,50 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           className="absolute inset-0 bg-navy-900/35"
         />
 
-        <div className="relative max-w-6xl mx-auto px-5 md:px-8 pt-28 md:pt-32 pb-14 md:pb-16">
-          <nav aria-label="Breadcrumb" className="mb-6">
-            <ol className="flex items-center gap-1.5 text-sm text-white/70">
-              <li>
-                <Link
-                  href="/"
-                  className="transition-colors hover:text-white"
-                >
-                  Início
-                </Link>
-              </li>
-              <li className="text-white/40" aria-hidden="true">›</li>
-              <li className="font-medium text-white">Blog</li>
-            </ol>
-          </nav>
+        {/* Breadcrumb dark inline ancorado ao topo */}
+        <div className="absolute top-0 left-0 right-0 z-10 pt-28 md:pt-32">
+          <div className="max-w-6xl mx-auto px-5 md:px-8">
+            <nav aria-label="Breadcrumb">
+              <ol className="flex items-center gap-1.5 text-sm text-white/70">
+                <li>
+                  <Link
+                    href="/"
+                    className="transition-colors hover:text-white"
+                  >
+                    Início
+                  </Link>
+                </li>
+                <li className="text-white/40" aria-hidden="true">›</li>
+                <li className="font-medium text-white">Blog</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
 
-          <p
-            className="text-[11px] sm:text-xs uppercase tracking-[0.22em] text-gold-400 mb-4"
-            style={{ fontFamily: 'var(--font-label)' }}
-          >
-            Blog DM2 Contabilidade
-          </p>
+        {/* Bloco de texto institucional, alinhado à esquerda e
+            centralizado verticalmente dentro do hero. Sem pb — o flex
+            items-center do <header> cuida do espaçamento simétrico em
+            cima e embaixo. */}
+        <div className="relative z-10 w-full">
+          <div className="max-w-6xl mx-auto px-5 md:px-8">
+            <p
+              className="text-[11px] sm:text-xs uppercase tracking-[0.22em] text-gold-400 mb-5 md:mb-6"
+              style={{ fontFamily: 'var(--font-label)' }}
+            >
+              Blog DM2 Contabilidade
+            </p>
 
-          <h1
-            className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] max-w-3xl"
-            style={{ fontFamily: 'var(--font-display)' }}
-          >
-            Blog de Contabilidade
-          </h1>
+            <h1
+              className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] max-w-3xl"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              Blog de Contabilidade
+            </h1>
 
-          <p className="mt-5 text-base md:text-lg text-white/85 leading-relaxed max-w-2xl">
-            Análises técnicas e atualizações para empresas em São Paulo.
-          </p>
+            <p className="mt-5 md:mt-6 text-base md:text-lg text-white/85 leading-relaxed max-w-2xl">
+              Análises técnicas e atualizações para empresas em São Paulo.
+            </p>
+          </div>
         </div>
       </header>
 

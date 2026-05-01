@@ -11,7 +11,7 @@ interface CTAStripProps {
 export function CTAStrip({
   title,
   subtitle,
-  buttonText = 'Fale com a DM2 Contabilidade',
+  buttonText = 'Entrar em contato',
   buttonHref = '/contato',
   variant = 'dark',
 }: CTAStripProps) {

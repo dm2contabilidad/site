@@ -1,10 +1,15 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { createMetadata } from '@/lib/metadata';
-import { PageHeader } from '@/components/layout/PageHeader';
 import { Section } from '@/components/layout/Section';
+import { Button } from '@/components/ui/Button';
 import { CTAStrip } from '@/components/sections/CTAStrip';
 import { FAQAccordion } from '@/components/sections/FAQAccordion';
-import { FAQSchema, ItemListSchema } from '@/components/seo/SchemaMarkup';
+import {
+  BreadcrumbSchema,
+  FAQSchema,
+  ItemListSchema,
+} from '@/components/seo/SchemaMarkup';
 import { serviceList } from '@/content/services';
 import { siteConfig } from '@/content/site';
 
@@ -50,11 +55,107 @@ export default function ServicosContabeisPage() {
         }))}
         itemType="Service"
       />
-      <PageHeader
-        title="Serviços Contábeis em São Paulo"
-        subtitle="Consultoria contábil, planejamento tributário, gestão fiscal e abertura de empresas. Cada serviço pensado para resolver necessidades reais de empresas paulistanas, com acompanhamento individualizado."
-        breadcrumbs={[{ label: 'Serviços Contábeis' }]}
+      {/* Hero institucional com imagem de fundo.
+          Família visual do home e /quem-somos (imagem + dual overlay navy
+          + texto white + accent gold + hairline gold no bottom), com
+          identidade própria para a página de serviços:
+          - altura padrão da família (70-80vh), alinhada com o hero de
+            consultoria-contabil para padronizar a presença visual dos
+            heroes do sistema
+          - sem eyebrow (a página é o índice em si, o H1 já basta)
+          - texto ancorado ao fundo (mesma família) */}
+      <BreadcrumbSchema
+        items={[
+          { name: 'Início', url: siteConfig.url },
+          {
+            name: 'Serviços Contábeis',
+            url: `${siteConfig.url}/servicos-contabeis`,
+          },
+        ]}
       />
+      <section className="relative min-h-[70vh] md:min-h-[80vh] flex items-end overflow-hidden bg-navy-900">
+        <Image
+          src="/images/photos/servicos-contabeis-em-sao-paulo.webp"
+          alt="Vista institucional de São Paulo, contexto urbano onde a DM2 Contabilidade atende empresas em serviços contábeis, tributários e fiscais"
+          fill
+          priority
+          quality={85}
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+
+        {/* Dual overlay: gradiente vertical para legibilidade do texto
+            inferior + tinte navy plana para coesão com a paleta. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/80 to-navy-900/45"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-navy-900/15"
+        />
+
+        {/* Breadcrumb ancorado ao topo */}
+        <div className="absolute top-0 left-0 right-0 z-10 pt-28 md:pt-32">
+          <div className="max-w-6xl mx-auto px-5 md:px-8">
+            <nav aria-label="Breadcrumb">
+              <ol className="flex items-center gap-1.5 text-sm text-white/70">
+                <li>
+                  <Link
+                    href="/"
+                    className="transition-colors hover:text-white"
+                  >
+                    Início
+                  </Link>
+                </li>
+                <li className="text-white/40" aria-hidden="true">
+                  ›
+                </li>
+                <li className="font-medium text-white">Serviços Contábeis</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+
+        {/* Bloco de texto institucional, ancorado ao fundo */}
+        <div className="relative z-10 w-full pb-14 md:pb-20">
+          <div className="max-w-6xl mx-auto px-5 md:px-8">
+            <div className="max-w-3xl">
+              <h1
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-[1.1]"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                Serviços Contábeis em São Paulo
+              </h1>
+              <p className="mt-5 md:mt-6 text-base md:text-lg text-white/85 leading-relaxed max-w-2xl">
+                Consultoria contábil, planejamento tributário, gestão fiscal e
+                abertura de empresas. Cada serviço pensado para resolver
+                necessidades reais de empresas paulistanas, com acompanhamento
+                individualizado.
+              </p>
+              <div className="mt-8 md:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center">
+                <Button
+                  href="/contato"
+                  variant="gold"
+                  size="lg"
+                  className="w-full sm:w-auto"
+                >
+                  Entrar em contato
+                </Button>
+                <p className="text-sm text-white/75 leading-snug max-w-xs">
+                  Análise sem custo. Resposta em 24h úteis.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Hairline gold inferior — assinatura visual compartilhada */}
+        <div
+          aria-hidden="true"
+          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold-500/60 to-transparent z-10"
+        />
+      </section>
 
       <Section spacing="lg">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
@@ -85,17 +186,17 @@ export default function ServicosContabeisPage() {
                 {service.hero.subtitle}
               </p>
 
-              {/* Dado-chave em chip */}
-              <div className="mt-6 pt-5 border-t border-[color:var(--color-border-soft)] flex items-baseline gap-3">
-                <span
-                  className="text-lg md:text-xl font-bold text-navy-900 tracking-tight leading-none"
+              {/* Dado-chave: valor em display, label embaixo — evita wraps feos */}
+              <div className="mt-6 pt-5 border-t border-[color:var(--color-border-soft)]">
+                <p
+                  className="text-lg md:text-xl font-bold text-navy-900 tracking-tight leading-none mb-1.5 whitespace-nowrap"
                   style={{ fontFamily: 'var(--font-display)' }}
                 >
                   {service.hero.keyFact.value}
-                </span>
-                <span className="text-xs md:text-[13px] text-neutral-600 leading-snug">
+                </p>
+                <p className="text-xs md:text-[13px] text-neutral-600 leading-snug">
                   {service.hero.keyFact.label}
-                </span>
+                </p>
               </div>
 
               <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-navy-800 group-hover:text-gold-600 transition-colors">
@@ -108,18 +209,23 @@ export default function ServicosContabeisPage() {
       </Section>
 
 
-      {/* Como funciona o atendimento */}
-      <Section bg="soft" spacing="default">
+      {/* Como funciona o atendimento.
+          Bloco navy: pausa visual forte dentro da página, depois do grid
+          claro de cards de serviço. Cards internas em branco para
+          legibilidade alta e leitura premium (mesmo padrão visual da
+          ficha técnica em /quem-somos), com sombra sutil para elevação
+          sobre o navy. */}
+      <Section bg="dark" spacing="default">
         <div className="max-w-4xl mx-auto">
           <div className="mb-10">
             <div className="w-10 h-0.5 bg-gold-500 mb-5 rounded-full" />
             <h2
-              className="text-2xl md:text-3xl font-bold text-navy-900 tracking-tight"
+              className="text-2xl md:text-3xl font-bold text-white tracking-tight"
               style={{ fontFamily: 'var(--font-display)' }}
             >
               Como funciona o atendimento na DM2 Contabilidade
             </h2>
-            <p className="mt-3 text-neutral-700 leading-relaxed max-w-2xl">
+            <p className="mt-3 text-white/80 leading-relaxed max-w-2xl">
               Três etapas simples antes de qualquer cobrança ou compromisso.
               Conversamos primeiro, analisamos depois, e só fechamos quando faz
               sentido para os dois lados.
@@ -145,7 +251,7 @@ export default function ServicosContabeisPage() {
             ].map((step) => (
               <li
                 key={step.n}
-                className="bg-white rounded-lg p-6 border border-[color:var(--color-border-soft)]"
+                className="bg-white rounded-lg p-6 shadow-lg shadow-black/20"
               >
                 <p
                   className="text-3xl font-bold text-gold-500 mb-3"
@@ -173,7 +279,7 @@ export default function ServicosContabeisPage() {
       <CTAStrip
         title="Não sabe por onde começar?"
         subtitle="Conte rapidamente sobre sua empresa. Indicamos por escrito qual frente faz mais sentido para o seu momento. Resposta em 24h úteis."
-        buttonText="Fale com a DM2 Contabilidade"
+        buttonText="Entrar em contato"
       />
     </>
   );

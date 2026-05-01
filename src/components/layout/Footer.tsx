@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { siteConfig, CLIENT_PORTAL_URL, TECHNICAL_REFERENCE } from '@/content/site';
 import { NAV_SERVICES, NAV_NICHES } from '@/lib/constants';
+import { DynamicYear } from './DynamicYear';
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
   const { nap, hours, foundingYear } = siteConfig;
 
   return (
@@ -151,7 +151,18 @@ export function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-white/10">
         <div className="max-w-6xl mx-auto px-5 md:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-white/55">
-          <p>© {foundingYear}–{currentYear} DM2 Contabilidade Ltda · CRC-SP {siteConfig.crcSp}</p>
+          <p>© {foundingYear}–<DynamicYear /> DM2 Contabilidade Ltda · CRC-SP {siteConfig.crcSp}</p>
+          <p>
+            Site construído com IA Claude Code por{' '}
+            <a
+              href="https://www.instagram.com/marianososaes/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 decoration-white/30 hover:text-white hover:decoration-gold-500 transition-colors"
+            >
+              Mariano Sosa
+            </a>
+          </p>
           <p>
             Responsável Técnico: {TECHNICAL_REFERENCE.name}
           </p>

@@ -5,9 +5,14 @@ import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { Button } from '@/components/ui/Button';
 import { FAQAccordion } from '@/components/sections/FAQAccordion';
 import { CTAStrip } from '@/components/sections/CTAStrip';
-import { FAQSchema, ServiceSchema } from '@/components/seo/SchemaMarkup';
+import {
+  BreadcrumbSchema,
+  FAQSchema,
+  ServiceSchema,
+} from '@/components/seo/SchemaMarkup';
 import { services } from '@/content/services';
 import { niches } from '@/content/niches';
+import { siteConfig } from '@/content/site';
 import { getPostsBySlugs } from '@/lib/blog/queries';
 import type { Service } from '@/types/service';
 import type { Niche, NicheSlug } from '@/types/niche';
@@ -29,13 +34,37 @@ function formatDate(iso: string | null | undefined): string {
   return Number.isNaN(d.getTime()) ? '' : dateFormatter.format(d);
 }
 
+/**
+ * Renders text with **term** markers as React fragments with <strong>.
+ * Editorial emphasis only: max 1-2 marks per long paragraph in data files.
+ * Safe: never uses dangerouslySetInnerHTML; pure JSX nodes.
+ */
+function withEmphasis(text: string, strongClass: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <strong key={i} className={strongClass}>
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
+const EMPHASIS_LIGHT = 'font-semibold text-navy-900';
+const EMPHASIS_DARK = 'font-semibold text-white';
+
+/** Strip **term** markers so the text can be safely embedded in JSON-LD. */
+function stripEmphasis(text: string) {
+  return text.replace(/\*\*([^*]+)\*\*/g, '$1');
+}
+
 export async function EntityPage(props: EntityPageProps) {
   const { kind, entity } = props;
 
   // Normalize shape across Service and Niche
-  const context = entity.sections.contexto;
-  const problem =
-    kind === 'service' ? entity.sections.problema : entity.sections.desafios;
   const approach = entity.sections.solucao;
   const differential =
     kind === 'service' ? entity.sections.diferencial : entity.diferencial;
@@ -82,83 +111,275 @@ export async function EntityPage(props: EntityPageProps) {
       {/* SCHEMA */}
       <ServiceSchema
         name={entity.title}
-        description={entity.intro}
+        description={stripEmphasis(entity.intro)}
         serviceType={entity.title}
       />
       {entity.faqs.length > 0 && <FAQSchema faqs={entity.faqs} />}
 
-      {/* 1 — HERO COMERCIAL */}
-      <section className="relative bg-white pt-28 md:pt-32 pb-14 md:pb-20 overflow-hidden">
-        {/* sutil acento de profundidad navy a la derecha */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-navy-50/60 to-transparent pointer-events-none"
-        />
-        <div className="relative max-w-6xl mx-auto px-5 md:px-8">
-          <Breadcrumbs items={breadcrumbs} />
+      {/* 1 — HERO.
+          Dois variantes ocupando o mesmo slot na página:
+          - Padrão (entidades sem heroImage): hero claro com grid 7+5
+            (texto à esquerda + card navy de keyFact à direita).
+          - Com heroImage (serviços e nichos que tenham foto associada):
+            hero full-bleed com a imagem como base visual de todo o frame,
+            na mesma família de /home e /quem-somos (imagem fill + triple
+            overlay navy + texto white + hairline gold inferior). Conteúdo
+            bottom-anchored com CTA + micropromessa + dado-chave; breadcrumb
+            dark inline adaptado a serviço (Início › Serviços Contábeis ›
+            título) ou nicho (Início › título). */}
+      {entity.heroImage ? (
+        <>
+          <BreadcrumbSchema
+            items={
+              kind === 'service'
+                ? [
+                    { name: 'Início', url: siteConfig.url },
+                    {
+                      name: 'Serviços Contábeis',
+                      url: `${siteConfig.url}/servicos-contabeis`,
+                    },
+                    {
+                      name: entity.title,
+                      url: `${siteConfig.url}/servicos-contabeis/${entity.slug}`,
+                    },
+                  ]
+                : [
+                    { name: 'Início', url: siteConfig.url },
+                    {
+                      name: entity.title,
+                      url: `${siteConfig.url}/${entity.slug}`,
+                    },
+                  ]
+            }
+          />
+          <section className="relative min-h-[70vh] md:min-h-[80vh] flex items-end overflow-hidden bg-navy-900">
+            <Image
+              src={entity.heroImage.src}
+              alt={entity.heroImage.alt}
+              fill
+              priority
+              quality={88}
+              sizes="100vw"
+              className="object-cover object-center"
+            />
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
-            {/* COL ESQUERDA — copy + CTA */}
-            <div className="lg:col-span-7">
-              <p
-                className="text-[11px] sm:text-xs uppercase tracking-[0.22em] text-gold-600 mb-4"
-                style={{ fontFamily: 'var(--font-label)' }}
-              >
-                {entity.hero.eyebrow}
-              </p>
-              <h1
-                className="text-[2rem] sm:text-[2.5rem] md:text-[3rem] lg:text-[3.25rem] font-bold text-navy-900 tracking-tight leading-[1.1]"
-                style={{ fontFamily: 'var(--font-display)' }}
-              >
-                {entity.h1}
-              </h1>
-              <p className="mt-5 md:mt-6 text-[17px] md:text-lg text-neutral-700 leading-relaxed max-w-2xl">
-                {entity.hero.subtitle}
-              </p>
+            {/* Triple overlay institucional. Calibrado para que a imagem
+                fique de fundo (presente, não protagonista), o texto ganhe
+                contraste WCAG holgado e o retrato humano (Danilo no caso
+                de consultoria) fique mais camuflado na composição.
+                1. Tinte navy plano denso (cohesão cromática + atenuação
+                   geral da imagem).
+                2. Gradiente vertical bottom-up reforçado para legibilidade
+                   absoluta do bloco de conteúdo ancorado ao fundo.
+                3. Vinheta superior para amarrar o topo com o navy. */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-navy-900/55"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/80 to-navy-900/35"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-navy-900/70 to-transparent"
+            />
 
-              <div className="mt-7 md:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center">
-                <Button href="/contato" variant="gold" size="lg" className="w-full sm:w-auto">
-                  {entity.hero.cta.text}
-                </Button>
-                <p className="text-sm text-neutral-600 leading-snug max-w-xs">
-                  {entity.hero.cta.promise}
-                </p>
+            {/* Breadcrumb dark inline ancorado ao topo.
+                Para serviços: Início › Serviços Contábeis › {title}.
+                Para nichos: Início › {title} (URL é o próprio slug). */}
+            <div className="absolute top-0 left-0 right-0 z-10 pt-28 md:pt-32">
+              <div className="max-w-6xl mx-auto px-5 md:px-8">
+                <nav aria-label="Breadcrumb">
+                  <ol className="flex items-center gap-1.5 text-sm text-white/70">
+                    <li>
+                      <Link
+                        href="/"
+                        className="transition-colors hover:text-white"
+                      >
+                        Início
+                      </Link>
+                    </li>
+                    <li className="text-white/40" aria-hidden="true">
+                      ›
+                    </li>
+                    {kind === 'service' && (
+                      <>
+                        <li>
+                          <Link
+                            href="/servicos-contabeis"
+                            className="transition-colors hover:text-white"
+                          >
+                            Serviços Contábeis
+                          </Link>
+                        </li>
+                        <li className="text-white/40" aria-hidden="true">
+                          ›
+                        </li>
+                      </>
+                    )}
+                    <li className="font-medium text-white">{entity.title}</li>
+                  </ol>
+                </nav>
               </div>
             </div>
 
-            {/* COL DIREITA — keyFact card */}
-            <aside className="lg:col-span-5 lg:pl-4">
-              <div className="relative bg-navy-900 text-white rounded-lg p-7 md:p-8 lg:p-9 overflow-hidden">
-                <div
-                  aria-hidden="true"
-                  className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold-500 to-transparent opacity-70"
-                />
+            {/* Bloco de conteúdo institucional, ancorado ao fundo.
+                Grid 7+5 sobre a imagem: copy à esquerda, dado-chave à
+                direita. Não é split layout (a imagem é base unificada);
+                são dois elementos ancorados sobre o mesmo plano visual
+                — mantém a continuidade com os outros heroes do sistema
+                que também exibem o dado-chave. */}
+            <div className="relative z-10 w-full pb-14 md:pb-20">
+              <div className="max-w-6xl mx-auto px-5 md:px-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end">
+                  <div className="lg:col-span-7">
+                    <p
+                      className="text-[11px] sm:text-xs uppercase tracking-[0.22em] text-gold-400 mb-5 md:mb-6"
+                      style={{ fontFamily: 'var(--font-label)' }}
+                    >
+                      {entity.hero.eyebrow}
+                    </p>
+                    <h1
+                      className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-[1.1]"
+                      style={{ fontFamily: 'var(--font-display)' }}
+                    >
+                      {entity.h1}
+                    </h1>
+                    <p className="mt-5 md:mt-6 text-base md:text-lg text-white/85 leading-relaxed max-w-2xl">
+                      {entity.hero.subtitle}
+                    </p>
+                    <div className="mt-8 md:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center">
+                      <Button
+                        href="/contato"
+                        variant="gold"
+                        size="lg"
+                        className="w-full sm:w-auto"
+                      >
+                        {entity.hero.cta.text}
+                      </Button>
+                      <p className="text-sm text-white/75 leading-snug max-w-xs">
+                        {entity.hero.cta.promise}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Dado-chave — mesmo card navy do hero padrão, aqui
+                      ancorado ao bottom-right sobre a imagem. Borde
+                      sutil white/10 para destacar do navy ambiente do
+                      overlay sem virar elemento suspenso. */}
+                  <aside className="lg:col-span-5 lg:pl-4">
+                    <div className="relative bg-navy-900/95 text-white rounded-lg p-6 md:p-7 overflow-hidden border border-white/10 backdrop-blur-sm">
+                      <div
+                        aria-hidden="true"
+                        className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold-500 to-transparent opacity-70"
+                      />
+                      <p
+                        className="text-[10px] uppercase tracking-[0.22em] text-gold-500 mb-3"
+                        style={{ fontFamily: 'var(--font-label)' }}
+                      >
+                        Dado-chave
+                      </p>
+                      <p
+                        className="text-[2.25rem] md:text-[2.5rem] font-bold text-white leading-none tracking-tight"
+                        style={{ fontFamily: 'var(--font-display)' }}
+                      >
+                        {entity.hero.keyFact.value}
+                      </p>
+                      <p className="mt-3 text-sm md:text-[15px] text-white/80 leading-relaxed">
+                        {entity.hero.keyFact.label}
+                      </p>
+                    </div>
+                  </aside>
+                </div>
+              </div>
+            </div>
+
+            {/* Hairline gold inferior — assinatura visual da família */}
+            <div
+              aria-hidden="true"
+              className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold-500/60 to-transparent z-10"
+            />
+          </section>
+        </>
+      ) : (
+        <section className="relative bg-white pt-28 md:pt-32 pb-14 md:pb-20 overflow-hidden">
+          {/* sutil acento de profundidad navy a la derecha */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-navy-50/60 to-transparent pointer-events-none"
+          />
+          <div className="relative max-w-6xl mx-auto px-5 md:px-8">
+            <Breadcrumbs items={breadcrumbs} />
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+              {/* COL ESQUERDA — copy + CTA */}
+              <div className="lg:col-span-7">
                 <p
-                  className="text-[10px] uppercase tracking-[0.22em] text-gold-500 mb-3"
+                  className="text-[11px] sm:text-xs uppercase tracking-[0.22em] text-gold-600 mb-4"
                   style={{ fontFamily: 'var(--font-label)' }}
                 >
-                  Dado-chave
+                  {entity.hero.eyebrow}
                 </p>
-                <p
-                  className="text-[2.5rem] md:text-[3rem] font-bold text-white leading-none tracking-tight"
+                <h1
+                  className="text-[2rem] sm:text-[2.5rem] md:text-[3rem] lg:text-[3.25rem] font-bold text-navy-900 tracking-tight leading-[1.1]"
                   style={{ fontFamily: 'var(--font-display)' }}
                 >
-                  {entity.hero.keyFact.value}
+                  {entity.h1}
+                </h1>
+                <p className="mt-6 md:mt-7 text-[17px] md:text-lg text-neutral-700 leading-relaxed max-w-2xl">
+                  {entity.hero.subtitle}
                 </p>
-                <p className="mt-3 text-sm md:text-[15px] text-white/80 leading-relaxed">
-                  {entity.hero.keyFact.label}
-                </p>
-              </div>
-            </aside>
-          </div>
-        </div>
 
-        {/* gold faixa abajo */}
-        <div
-          aria-hidden="true"
-          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold-500/55 to-transparent"
-        />
-      </section>
+                <div className="mt-8 md:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center">
+                  <Button
+                    href="/contato"
+                    variant="gold"
+                    size="lg"
+                    className="w-full sm:w-auto"
+                  >
+                    {entity.hero.cta.text}
+                  </Button>
+                  <p className="text-sm text-neutral-600 leading-snug max-w-xs">
+                    {entity.hero.cta.promise}
+                  </p>
+                </div>
+              </div>
+
+              {/* COL DIREITA — keyFact card */}
+              <aside className="lg:col-span-5 lg:pl-4">
+                <div className="relative bg-navy-900 text-white rounded-lg p-7 md:p-8 lg:p-9 overflow-hidden">
+                  <div
+                    aria-hidden="true"
+                    className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold-500 to-transparent opacity-70"
+                  />
+                  <p
+                    className="text-[10px] uppercase tracking-[0.22em] text-gold-500 mb-3"
+                    style={{ fontFamily: 'var(--font-label)' }}
+                  >
+                    Dado-chave
+                  </p>
+                  <p
+                    className="text-[2.5rem] md:text-[3rem] font-bold text-white leading-none tracking-tight"
+                    style={{ fontFamily: 'var(--font-display)' }}
+                  >
+                    {entity.hero.keyFact.value}
+                  </p>
+                  <p className="mt-3 text-sm md:text-[15px] text-white/80 leading-relaxed">
+                    {entity.hero.keyFact.label}
+                  </p>
+                </div>
+              </aside>
+            </div>
+          </div>
+
+          {/* gold faixa abajo */}
+          <div
+            aria-hidden="true"
+            className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold-500/55 to-transparent"
+          />
+        </section>
+      )}
 
       {/* 2 — INTRO DENSA (citable por IA, propio bloque) */}
       <Section bg="soft" spacing="default">
@@ -170,24 +391,43 @@ export async function EntityPage(props: EntityPageProps) {
             Visão geral
           </p>
           <p className="text-neutral-800 leading-relaxed text-[17px] md:text-lg">
-            {entity.intro}
+            {withEmphasis(entity.intro, EMPHASIS_LIGHT)}
           </p>
         </div>
       </Section>
 
-      {/* 3 — CONTEXTO / PROBLEMA (servicio) | REALIDADE / DESAFIOS (nicho) */}
+      {/* 3 — CONTEXTO / REALIDADE em layout editorial (sem números) */}
       <Section spacing="default">
-        <div className="max-w-3xl">
-          <div className="w-10 h-0.5 bg-gold-500 mb-5 rounded-full" />
-          <h2
-            className="text-2xl md:text-3xl font-bold text-navy-900 mb-6 tracking-tight"
-            style={{ fontFamily: 'var(--font-display)' }}
-          >
-            {headings.contextH2}
-          </h2>
-          <div className="space-y-5 text-neutral-700 leading-relaxed text-[17px]">
-            <p>{context}</p>
-            <p>{problem}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
+          <div className="lg:col-span-4">
+            <div className="w-10 h-0.5 bg-gold-500 mb-5 rounded-full" />
+            <h2
+              className="text-2xl md:text-3xl font-bold text-navy-900 tracking-tight leading-[1.15]"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              {headings.contextH2}
+            </h2>
+          </div>
+          <div className="lg:col-span-8">
+            <ul className="space-y-7 md:space-y-8">
+              {entity.contextPoints.map((point) => (
+                <li key={point.title} className="relative pl-6">
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-0 top-[11px] w-2 h-2 rounded-full bg-gold-500"
+                  />
+                  <h3
+                    className="text-base md:text-lg font-semibold text-navy-900 leading-snug mb-2"
+                    style={{ fontFamily: 'var(--font-display)' }}
+                  >
+                    {point.title}
+                  </h3>
+                  <p className="text-[15px] md:text-base text-neutral-700 leading-relaxed">
+                    {withEmphasis(point.body, EMPHASIS_LIGHT)}
+                  </p>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </Section>
@@ -199,7 +439,7 @@ export async function EntityPage(props: EntityPageProps) {
           className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold-500 to-transparent opacity-60"
         />
         <div className="max-w-6xl mx-auto px-5 md:px-8 py-16 md:py-20">
-          <div className="max-w-2xl mb-10 md:mb-12">
+          <div className="max-w-2xl mb-12 md:mb-14">
             <p
               className="text-[11px] uppercase tracking-[0.22em] text-gold-500 mb-4"
               style={{ fontFamily: 'var(--font-label)' }}
@@ -221,20 +461,20 @@ export async function EntityPage(props: EntityPageProps) {
             {entity.stakes.map((item) => (
               <li
                 key={item.label}
-                className="relative bg-white/[0.04] border border-white/10 rounded-lg p-6 md:p-7"
+                className="relative bg-white/[0.04] border border-white/10 rounded-lg p-6 md:p-7 overflow-hidden"
               >
                 <span
                   aria-hidden="true"
-                  className="absolute top-6 left-0 w-[3px] h-10 bg-gold-500 rounded-r"
+                  className="absolute top-0 left-0 right-0 h-[2px] bg-gold-500/75"
                 />
                 <p
-                  className="text-base md:text-lg font-semibold text-white leading-snug mb-3 pl-2"
+                  className="text-base md:text-lg font-semibold text-white leading-snug mb-2.5 mt-1"
                   style={{ fontFamily: 'var(--font-display)' }}
                 >
                   {item.label}
                 </p>
-                <p className="text-sm md:text-[15px] text-white/75 leading-relaxed pl-2">
-                  {item.detail}
+                <p className="text-sm md:text-[15px] text-white/75 leading-relaxed">
+                  {withEmphasis(item.detail, EMPHASIS_DARK)}
                 </p>
               </li>
             ))}
@@ -254,19 +494,23 @@ export async function EntityPage(props: EntityPageProps) {
               {headings.approachH2}
             </h2>
             <p className="text-neutral-700 leading-relaxed text-[17px]">
-              {approach}
+              {withEmphasis(approach, EMPHASIS_LIGHT)}
             </p>
           </div>
           <aside className="lg:col-span-2">
-            <div className="bg-white rounded-lg p-6 md:p-7 border border-[color:var(--color-border-soft)]">
+            <div className="relative bg-white rounded-lg p-6 md:p-7 border border-[color:var(--color-border-soft)] overflow-hidden">
+              <span
+                aria-hidden="true"
+                className="absolute top-0 left-0 right-0 h-[3px] bg-gold-500"
+              />
               <p
-                className="text-[10px] uppercase tracking-[0.22em] text-gold-600 mb-3"
+                className="text-[10px] uppercase tracking-[0.22em] text-gold-600 mb-3 mt-1"
                 style={{ fontFamily: 'var(--font-label)' }}
               >
                 Diferencial DM2 Contabilidade
               </p>
               <p className="text-sm md:text-[15px] text-neutral-700 leading-relaxed">
-                {differential}
+                {withEmphasis(differential, EMPHASIS_LIGHT)}
               </p>
             </div>
           </aside>
@@ -294,15 +538,21 @@ export async function EntityPage(props: EntityPageProps) {
             {entity.processo.map((step, i) => (
               <li
                 key={i}
-                className="relative bg-white rounded-lg p-6 border border-[color:var(--color-border-soft)]"
+                className="relative bg-navy-900 rounded-lg p-6 md:p-7 border border-white/8 shadow-[0_10px_28px_-14px_rgba(7,71,93,0.30)]"
               >
-                <span
-                  className="block text-3xl md:text-[2.25rem] font-bold text-gold-500 mb-3 leading-none tracking-tight"
-                  style={{ fontFamily: 'var(--font-display)' }}
-                >
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <p className="text-sm md:text-[15px] text-neutral-700 leading-relaxed">
+                <div className="flex items-baseline gap-3 mb-4">
+                  <span
+                    className="text-3xl md:text-[2.25rem] font-bold text-gold-500 leading-none tracking-tight"
+                    style={{ fontFamily: 'var(--font-display)' }}
+                  >
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="block w-8 h-px bg-gold-500/55"
+                  />
+                </div>
+                <p className="text-sm md:text-[15px] text-white/80 leading-relaxed">
                   {step}
                 </p>
               </li>
