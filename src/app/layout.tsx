@@ -5,6 +5,7 @@ import { defaultMetadata } from '@/lib/metadata';
 import { OrganizationSchema } from '@/components/seo/SchemaMarkup';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { HideOnAdmin } from '@/components/layout/HideOnAdmin';
 import './globals.css';
 
 // ---------------------------------------------------------------------------
@@ -88,9 +89,13 @@ export default function RootLayout({
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:bg-navy-800 focus:text-white focus:rounded-md">
           Ir para o conteúdo
         </a>
-        <Header />
+        <HideOnAdmin>
+          <Header />
+        </HideOnAdmin>
         <main id="main-content" className="flex-1">{children}</main>
-        <Footer />
+        <HideOnAdmin>
+          <Footer />
+        </HideOnAdmin>
 
         {/* --- Google Analytics 4 --- */}
         {GA_ID && (

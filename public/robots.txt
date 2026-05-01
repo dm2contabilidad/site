@@ -2,21 +2,27 @@ User-agent: *
 Allow: /
 Disallow: /obrigado
 Disallow: /api/
+Disallow: /admin/
 
-# AI crawlers — ALLOWED
+# AI crawlers — ALLOWED on public pages, admin always blocked
 User-agent: GPTBot
 Allow: /
+Disallow: /admin/
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /admin/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /admin/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /admin/
 
 User-agent: OAI-SearchBot
 Allow: /
+Disallow: /admin/
 
 Sitemap: https://dm2contabilidade.com.br/sitemap.xml
