@@ -196,16 +196,16 @@ export default async function BlogPostPage({ params }: PostPageProps) {
         </div>
       </header>
 
-      {/* Cover image */}
+      {/* Cover image — alineada al mismo ancho editorial que header y cuerpo (max-w-3xl) */}
       {cover && (
         <div className="bg-neutral-50">
-          <div className="max-w-4xl mx-auto px-5 md:px-8 pb-12 md:pb-16">
+          <div className="max-w-3xl mx-auto px-5 md:px-8 pb-12 md:pb-16">
             <figure className="relative aspect-[16/9] overflow-hidden rounded-lg bg-neutral-100">
               <Image
                 src={cover}
                 alt={coverAlt}
                 fill
-                sizes="(min-width: 1024px) 56rem, 100vw"
+                sizes="(min-width: 768px) 48rem, 100vw"
                 className="object-cover"
                 priority
               />
@@ -214,8 +214,10 @@ export default async function BlogPostPage({ params }: PostPageProps) {
         </div>
       )}
 
-      {/* Body */}
-      <Section width="narrow" spacing="default" bg="white">
+      {/* Body — override apenas do padding-top para reduzir o ar antes do primeiro H2.
+          A portada acima mantém seu padding-bottom intacto; o pb default da Section
+          também permanece para preservar o ritmo com a próxima seção. */}
+      <Section width="narrow" spacing="default" bg="white" className="!pt-6 md:!pt-8">
         {post.contentHtml ? (
           <article
             className="article-body"

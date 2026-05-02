@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useId, useState, useTransition, type ReactNode } from 'react';
 import { POST_STATUSES, type PostStatus } from '@/lib/admin/validation';
 import { createPostAction, updatePostAction } from './actions';
+import { ImageUploader } from './ImageUploader';
 
 export interface PostFormValues {
   title: string;
@@ -75,7 +76,16 @@ export function PostForm({
   const [relatedServices, setRelatedServices] = useState<string[]>(initialRelatedServices);
   const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
   const [formError, setFormError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  // Auto-clear success banner after 4s on edit (create redirects, so it
+  // disappears with the navigation anyway).
+  useEffect(() => {
+    if (!successMsg) return;
+    const t = setTimeout(() => setSuccessMsg(null), 4000);
+    return () => clearTimeout(t);
+  }, [successMsg]);
 
   function update<K extends keyof PostFormValues>(key: K, val: PostFormValues[K]) {
     setValues((v) => ({ ...v, [key]: val }));
@@ -89,6 +99,7 @@ export function PostForm({
     formData.set('faqs', JSON.stringify(faqs));
     formData.set('relatedServices', JSON.stringify(relatedServices));
     setFormError(null);
+    setSuccessMsg(null);
     setErrors({});
     startTransition(async () => {
       const result =
@@ -96,9 +107,21 @@ export function PostForm({
           ? await createPostAction(formData)
           : await updatePostAction(postId!, formData);
       if (result.ok && result.postId) {
-        router.refresh();
         if (mode === 'create') {
-          router.push(`/admin/blog/${result.postId}`);
+          // Show success briefly, then redirect to the edit screen of
+          // the new post. The banner survives until the navigation.
+          setSuccessMsg('Post criado com sucesso. Redirecionando…');
+          setTimeout(() => {
+            router.push(`/admin/blog/${result.postId}?created=1`);
+          }, 900);
+        } else {
+          setSuccessMsg('Alterações salvas.');
+          router.refresh();
+          // Scroll to top so the banner is visible regardless of where the
+          // editor was scrolled when the user hit "Salvar".
+          if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         }
       } else {
         setFormError(result.formError ?? 'Não foi possível salvar.');
@@ -144,6 +167,19 @@ export function PostForm({
         </div>
       )}
 
+      {successMsg && (
+        <div
+          className="text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-md px-3 py-2 flex items-center gap-2"
+          role="status"
+        >
+          <span aria-hidden="true">✓</span>
+          <span>{successMsg}</span>
+        </div>
+      )}
+
+      <CreatedBanner />
+
+
       <Section title="Conteúdo" id="conteudo">
         <Field label="Título" required error={err('title')}>
           <input
@@ -154,7 +190,12 @@ export function PostForm({
             className={inputCls}
           />
         </Field>
-        <Field label="Slug" required error={err('slug')}>
+        <Field
+          label="Slug"
+          required
+          error={err('slug')}
+          info="URL pública do post: /blog/<slug>. Use kebab-case, sem acentos. Ex.: 'ibs-cbs-notas-fiscais-2026'. Não altere após publicar — quebra links externos."
+        >
           <input
             name="slug"
             value={values.slug}
@@ -172,7 +213,12 @@ export function PostForm({
             className={inputCls}
           />
         </Field>
-        <Field label="Excerto" required error={err('excerpt')} hint="Resumo curto exibido em listas e meta description fallback.">
+        <Field
+          label="Excerto"
+          required
+          error={err('excerpt')}
+          info="Resumo curto (1-2 frases). Aparece em listas do blog e é usado como fallback de meta description quando 'SEO description' está vazio."
+        >
           <textarea
             name="excerpt"
             value={values.excerpt}
@@ -182,7 +228,11 @@ export function PostForm({
             className={textareaCls}
           />
         </Field>
-        <Field label="Conteúdo (HTML)" error={err('contentHtml')} hint="HTML do corpo do artigo. Sanitize fora do admin se necessário.">
+        <Field
+          label="Conteúdo (HTML)"
+          error={err('contentHtml')}
+          info="HTML do corpo do artigo. Aceita tags semânticas (h2, h3, p, ul, blockquote, a, strong, em, code). Sanitize de fonte externa antes de colar."
+        >
           <textarea
             name="contentHtml"
             value={values.contentHtml}
@@ -209,6 +259,7 @@ export function PostForm({
               label="Pillar (peça âncora)"
               checked={values.isPillar}
               onChange={(v) => update('isPillar', v)}
+              info="Conteúdo âncora: peça longa e abrangente que outros posts orbitam via links internos. Use para temas centrais (ex.: guia completo Simples Nacional)."
             />
           </Field>
         </div>
@@ -231,7 +282,7 @@ export function PostForm({
           <Field
             label="Data de publicação"
             error={err('publishedAt')}
-            hint="Obrigatório para scheduled/published. ISO 8601 (UTC)."
+            info="Obrigatório quando status = 'scheduled' ou 'published'. Para agendar, escolha uma data futura: o post fica invisível até esse horário e aparece automaticamente."
           >
             <input
               type="datetime-local"
@@ -291,20 +342,32 @@ export function PostForm({
               label="Conteúdo evergreen"
               checked={values.isEvergreen}
               onChange={(v) => update('isEvergreen', v)}
+              info="Conteúdo atemporal cuja relevância não decai com o tempo (ex.: 'como abrir CNPJ MEI'). Usado para priorizar revisões periódicas em vez de republicações."
             />
           </div>
         </div>
       </Section>
 
       <Section title="Featured no home" id="featured">
+        <p className="text-xs text-neutral-600 -mt-1">
+          Lógica híbrida: o home mostra 3 posts. Se você marcar posts como
+          featured, eles entram primeiro (ordenados por &quot;Ordem&quot;).
+          Os espaços restantes são preenchidos automaticamente com os posts
+          publicados mais recentes.
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Toggle
             name="featuredOnHome"
             label="Mostrar no home"
             checked={values.featuredOnHome}
             onChange={(v) => update('featuredOnHome', v)}
+            info="Marque para fixar este post na home, sem depender da data de publicação. Sem destaques, o home se enche sozinho com os 3 mais recentes."
           />
-          <Field label="Ordem (menor primeiro)" error={err('featuredOrder')}>
+          <Field
+            label="Ordem (menor primeiro)"
+            error={err('featuredOrder')}
+            info="Define a posição entre os destaques manuais. 0 = primeiro, 1 = segundo, etc. Só faz efeito se 'Mostrar no home' está ativo."
+          >
             <input
               type="number"
               name="featuredOrder"
@@ -320,7 +383,24 @@ export function PostForm({
       </Section>
 
       <Section title="Imagem" id="imagem">
-        <Field label="URL da imagem de capa" error={err('coverImageUrl')}>
+        <Field
+          label="Imagem de capa"
+          error={err('coverImageUrl')}
+          info="Imagem principal do post. Suba aqui (vai para o Supabase Storage) ou cole uma URL pública abaixo. Aspecto recomendado 16:9, 1600px de largura."
+        >
+          <ImageUploader
+            value={values.coverImageUrl}
+            onUploaded={(url) => update('coverImageUrl', url)}
+            alt={values.coverImageAlt}
+            slugHint={values.slug || 'post'}
+            label="Upload da capa"
+          />
+        </Field>
+        <Field
+          label="URL da imagem de capa"
+          error={err('coverImageUrl')}
+          info="Preenchida automaticamente após o upload. Edite manualmente apenas se a imagem já estiver hospedada em outro lugar (ex.: CDN externa permitida em next.config.ts)."
+        >
           <input
             name="coverImageUrl"
             type="url"
@@ -330,17 +410,11 @@ export function PostForm({
             placeholder="https://…"
           />
         </Field>
-        {values.coverImageUrl && (
-          <div className="mt-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={values.coverImageUrl}
-              alt={values.coverImageAlt || 'preview'}
-              className="max-h-40 rounded border border-neutral-200"
-            />
-          </div>
-        )}
-        <Field label="Texto alternativo da capa" error={err('coverImageAlt')}>
+        <Field
+          label="Texto alternativo da capa"
+          error={err('coverImageAlt')}
+          info="Descreve a imagem para leitores de tela e quando a imagem não carrega. Seja específico: evite 'imagem' ou 'foto'. Ex.: 'Painel solar em telhado de fábrica em São Paulo'."
+        >
           <input
             name="coverImageAlt"
             value={values.coverImageAlt}
@@ -348,7 +422,11 @@ export function PostForm({
             className={inputCls}
           />
         </Field>
-        <Field label="URL da imagem OG (opcional)" error={err('ogImageUrl')}>
+        <Field
+          label="URL da imagem OG (opcional)"
+          error={err('ogImageUrl')}
+          info="Imagem usada quando o post é compartilhado em redes sociais (Open Graph / Twitter Card). Se vazio, usa a capa. Aspecto recomendado 1200×630."
+        >
           <input
             name="ogImageUrl"
             type="url"
@@ -362,7 +440,11 @@ export function PostForm({
 
       <Section title="SEO" id="seo">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="SEO title" error={err('seoTitle')}>
+          <Field
+            label="SEO title"
+            error={err('seoTitle')}
+            info="Título exibido na aba do navegador e nos resultados do Google. Idealmente 50-60 caracteres. Se vazio, usa o título do post."
+          >
             <input
               name="seoTitle"
               value={values.seoTitle}
@@ -371,7 +453,11 @@ export function PostForm({
               placeholder="Se vazio, usa o título"
             />
           </Field>
-          <Field label="Canonical URL" error={err('canonicalUrl')}>
+          <Field
+            label="Canonical URL"
+            error={err('canonicalUrl')}
+            info="URL canônica quando o conteúdo também existe em outro lugar (mídias, repúblicas). Em geral deixe vazio: o sistema usa a URL pública por padrão."
+          >
             <input
               type="url"
               name="canonicalUrl"
@@ -381,7 +467,11 @@ export function PostForm({
             />
           </Field>
         </div>
-        <Field label="SEO description" error={err('seoDescription')}>
+        <Field
+          label="SEO description"
+          error={err('seoDescription')}
+          info="Resumo exibido nos resultados do Google abaixo do título. 140-160 caracteres. Se vazio, usa o excerto. Inclua a keyword principal naturalmente."
+        >
           <textarea
             name="seoDescription"
             value={values.seoDescription}
@@ -409,7 +499,11 @@ export function PostForm({
           </Field>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Primary keyword" error={err('primaryKeyword')}>
+          <Field
+            label="Primary keyword"
+            error={err('primaryKeyword')}
+            info="Termo principal que o post quer rankear. Use exatamente como buscado. Ex.: 'contabilidade para advogados em São Paulo'. Apareça no H1, na intro e em ao menos um H2."
+          >
             <input
               name="primaryKeyword"
               value={values.primaryKeyword}
@@ -417,7 +511,11 @@ export function PostForm({
               className={inputCls}
             />
           </Field>
-          <Field label="Secondary keywords (vírgula)" error={err('secondaryKeywords')}>
+          <Field
+            label="Secondary keywords (vírgula)"
+            error={err('secondaryKeywords')}
+            info="Variações e termos relacionados, separados por vírgula. Ex.: 'simples nacional, lucro presumido, escritório de advocacia'. 3-7 itens."
+          >
             <input
               name="secondaryKeywords"
               value={values.secondaryKeywords}
@@ -426,7 +524,11 @@ export function PostForm({
               placeholder="ex: simples nacional, lucro presumido"
             />
           </Field>
-          <Field label="Search intent" error={err('searchIntent')}>
+          <Field
+            label="Search intent"
+            error={err('searchIntent')}
+            info="Tipo de intenção: informational (quem busca quer aprender), commercial (compara opções), transactional (pronto para contratar) ou navigational (busca a marca)."
+          >
             <input
               name="searchIntent"
               value={values.searchIntent}
@@ -435,7 +537,11 @@ export function PostForm({
               placeholder="informational | commercial | …"
             />
           </Field>
-          <Field label="Entity focus" error={err('entityFocus')}>
+          <Field
+            label="Entity focus"
+            error={err('entityFocus')}
+            info="Entidade principal do post (pessoa, organização, conceito) reconhecível por motores semânticos. Ex.: 'Simples Nacional', 'Receita Federal do Brasil', 'eSocial'."
+          >
             <input
               name="entityFocus"
               value={values.entityFocus}
@@ -443,7 +549,11 @@ export function PostForm({
               className={inputCls}
             />
           </Field>
-          <Field label="Local focus" error={err('localFocus')}>
+          <Field
+            label="Local focus"
+            error={err('localFocus')}
+            info="Cidade ou região alvo do conteúdo, usada por SEO local e por IAs para inferir contexto geográfico. Ex.: 'São Paulo', 'Vila Mariana'."
+          >
             <input
               name="localFocus"
               value={values.localFocus}
@@ -459,18 +569,21 @@ export function PostForm({
             label="robots: index"
             checked={values.robotsIndex}
             onChange={(v) => update('robotsIndex', v)}
+            info="Permite que motores de busca incluam o post no índice. Desmarque para conteúdo interno, em revisão ou duplicado que não deve aparecer no Google."
           />
           <Toggle
             name="robotsFollow"
             label="robots: follow"
             checked={values.robotsFollow}
             onChange={(v) => update('robotsFollow', v)}
+            info="Permite que motores de busca sigam os links do post para descobrir outras páginas. Em geral mantenha ativo."
           />
           <Toggle
             name="faqEnabled"
             label="Renderizar FAQ no post"
             checked={values.faqEnabled}
             onChange={(v) => update('faqEnabled', v)}
+            info="Quando ativo, as FAQs configuradas abaixo são renderizadas no fim do post e marcadas com schema FAQPage para os Rich Results do Google."
           />
         </div>
       </Section>
@@ -489,7 +602,7 @@ export function PostForm({
           <Field
             label="Serviço primário (slug, opcional)"
             error={err('relatedServiceSlug')}
-            hint="Coluna legacy related_service_slug usada por rich snippets."
+            info="Coluna legacy related_service_slug usada por rich snippets. Mantida para compatibilidade — prefira selecionar acima na lista."
           >
             <input
               name="relatedServiceSlug"
@@ -501,7 +614,7 @@ export function PostForm({
           <Field
             label="Especialidade primária (slug, opcional)"
             error={err('relatedSpecialtySlug')}
-            hint="Coluna legacy related_specialty_slug."
+            info="Coluna legacy related_specialty_slug. Slugs disponíveis: contabilidade-para-advogados, contabilidade-para-profissionais-da-saude, contabilidade-para-negocios-digitais."
           >
             <input
               name="relatedSpecialtySlug"
@@ -540,6 +653,42 @@ const inputCls =
   'w-full px-3 py-2 border border-neutral-300 rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-neutral-100 disabled:text-neutral-500';
 const textareaCls = inputCls;
 
+/**
+ * One-shot success banner shown when the editor was reached via
+ * ?created=1 — i.e. the user just created a new post and was
+ * redirected here. Auto-clears after 5s. The query param is removed
+ * from the URL once shown, so a manual refresh doesn't re-trigger it.
+ */
+function CreatedBanner() {
+  const params = useSearchParams();
+  const router = useRouter();
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (params.get('created') === '1') {
+      setShow(true);
+      // Strip the param so refreshing or sharing the URL doesn't keep
+      // showing the banner.
+      const url = new URL(window.location.href);
+      url.searchParams.delete('created');
+      router.replace(url.pathname + (url.search || ''));
+      const t = setTimeout(() => setShow(false), 5000);
+      return () => clearTimeout(t);
+    }
+  }, [params, router]);
+
+  if (!show) return null;
+  return (
+    <div
+      className="text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-md px-3 py-2 flex items-center gap-2"
+      role="status"
+    >
+      <span aria-hidden="true">✓</span>
+      <span>Post criado com sucesso. Você está editando agora.</span>
+    </div>
+  );
+}
+
 function Section({ title, id, children }: { title: string; id: string; children: React.ReactNode }) {
   return (
     <section id={id} className="bg-white border border-neutral-200 rounded-lg p-5 md:p-6 space-y-4">
@@ -554,17 +703,52 @@ function Section({ title, id, children }: { title: string; id: string; children:
   );
 }
 
+/**
+ * Inline (i) toggle that reveals a short explanation below the label.
+ * Disclosure pattern, no floating tooltip. Used for any field that
+ * benefits from extra context without cluttering the form.
+ */
+function InfoToggle({ label, info }: { label: string; info: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const id = useId();
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls={id}
+        aria-label={`Ajuda: ${label || 'campo'}`}
+        className="ml-1.5 inline-flex h-4 w-4 items-center justify-center rounded-full border border-neutral-300 text-[10px] font-semibold text-neutral-500 leading-none align-middle hover:bg-neutral-100 hover:text-navy-900 hover:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-gold-500"
+      >
+        i
+      </button>
+      {open && (
+        <div
+          id={id}
+          role="region"
+          className="mt-1 mb-1.5 text-xs text-neutral-600 bg-neutral-50 border border-neutral-200 rounded px-2 py-1.5 leading-snug"
+        >
+          {info}
+        </div>
+      )}
+    </>
+  );
+}
+
 function Field({
   label,
   required,
   error,
   hint,
+  info,
   children,
 }: {
   label: string;
   required?: boolean;
   error?: string;
   hint?: string;
+  info?: ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -573,6 +757,7 @@ function Field({
         <label className="block text-sm font-medium text-neutral-700 mb-1.5">
           {label}
           {required && <span className="text-red-600"> *</span>}
+          {info && <InfoToggle label={label} info={info} />}
         </label>
       )}
       {children}
@@ -587,23 +772,28 @@ function Toggle({
   label,
   checked,
   onChange,
+  info,
 }: {
   name: string;
   label: string;
   checked: boolean;
   onChange: (v: boolean) => void;
+  info?: ReactNode;
 }) {
   return (
-    <label className="inline-flex items-center gap-2 text-sm text-neutral-800 cursor-pointer">
-      <input
-        type="checkbox"
-        name={name}
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="h-4 w-4 accent-navy-900"
-      />
-      <span>{label}</span>
-    </label>
+    <div className="inline-flex flex-col">
+      <label className="inline-flex items-center gap-2 text-sm text-neutral-800 cursor-pointer">
+        <input
+          type="checkbox"
+          name={name}
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+          className="h-4 w-4 accent-navy-900"
+        />
+        <span>{label}</span>
+        {info && <InfoToggle label={label} info={info} />}
+      </label>
+    </div>
   );
 }
 

@@ -2,20 +2,20 @@ import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { isAdminAuthenticated } from '@/lib/admin/session';
-import { logoutAction } from './actions';
+import { logoutAction } from './blog/actions';
 
 /**
- * Admin layout — minimal chrome, no public Header/Footer, robots noindex.
+ * Admin layout — minimal chrome for the whole /admin tree.
  *
- * Shows a thin top bar with a "back to public site" link and a logout
- * button when the user is authenticated. Renders bare children for the
- * login page (no top bar visible there because no session yet, but the
- * top bar is conditional on isAdminAuthenticated() returning true).
+ * No public Header/Footer, robots noindex. The top bar is conditional
+ * on isAdminAuthenticated() so the login page stays bare. logoutAction
+ * lives in /admin/blog/actions.ts; this file imports it to keep the
+ * server actions colocated with the blog feature.
  */
 
 export const metadata: Metadata = {
-  title: 'Admin · Blog · DM2 Contabilidade',
-  description: 'Painel administrativo do blog DM2 Contabilidade',
+  title: 'Admin · DM2 Contabilidade',
+  description: 'Painel administrativo DM2 Contabilidade',
   robots: {
     index: false,
     follow: false,
@@ -43,7 +43,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
                 className="text-sm font-semibold text-navy-900 hover:text-navy-800 truncate"
                 style={{ fontFamily: 'var(--font-display)' }}
               >
-                Admin · Blog DM2
+                Admin DM2
               </Link>
               <nav className="hidden sm:flex items-center gap-4 text-sm">
                 <Link href="/admin/blog" className="text-neutral-700 hover:text-navy-900">
@@ -51,6 +51,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
                 </Link>
                 <Link href="/admin/blog/new" className="text-neutral-700 hover:text-navy-900">
                   Novo post
+                </Link>
+                <Link href="/admin/analytics" className="text-neutral-700 hover:text-navy-900">
+                  Analytics
                 </Link>
               </nav>
             </div>
