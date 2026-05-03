@@ -165,6 +165,76 @@ function buildTextBody(data: LeadEmailData, sentAt: string): string {
 }
 
 /**
+ * Send the admin password-reset email. Always returns a boolean: true
+ * if SMTP accepted the message, false otherwise. The link in the body
+ * is the absolute reset URL with the single-use token; the receiver
+ * sees nothing else of the credential — the plain token is not logged.
+ */
+export async function sendPasswordResetEmail(opts: {
+  to: string;
+  resetUrl: string;
+  expiresAt: Date;
+}): Promise<boolean> {
+  const transporter = getTransporter();
+  const from = process.env.MAIL_FROM;
+  if (!transporter || !from) {
+    console.warn('[Email] SMTP not fully configured. Reset email skipped.');
+    return false;
+  }
+
+  const safeTo = sanitizeHeaderValue(opts.to);
+  const subject = 'Redefinição de senha · Admin DM2 Contabilidade';
+  const expiresStr = opts.expiresAt.toLocaleString('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+  });
+
+  const html = [
+    `<div style="font-family:sans-serif;max-width:560px;color:#222;">`,
+    `<h2 style="font-family:sans-serif;color:#0A2E5C;margin:0 0 16px;">Redefinição de senha</h2>`,
+    `<p style="line-height:1.5;margin:0 0 16px;">Recebemos uma solicitação para redefinir a senha de acesso ao painel administrativo da DM2 Contabilidade.</p>`,
+    `<p style="line-height:1.5;margin:0 0 24px;">Para criar uma nova senha, clique no link abaixo:</p>`,
+    `<p style="margin:0 0 24px;"><a href="${opts.resetUrl}" style="background:#0A2E5C;color:#fff;text-decoration:none;padding:10px 18px;border-radius:6px;display:inline-block;font-weight:600;">Redefinir senha</a></p>`,
+    `<p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px;">Ou copie e cole esta URL no navegador:</p>`,
+    `<p style="font-size:12px;color:#0A2E5C;word-break:break-all;margin:0 0 24px;">${escapeHtml(opts.resetUrl)}</p>`,
+    `<p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px;">Este link é válido até <strong>${escapeHtml(expiresStr)}</strong> e pode ser usado uma única vez.</p>`,
+    `<p style="font-size:13px;color:#555;line-height:1.5;margin:0;">Se você não solicitou esta redefinição, ignore este e-mail — sua senha atual continuará válida.</p>`,
+    `<hr style="border:none;border-top:1px solid #eee;margin:24px 0 16px;">`,
+    `<p style="font-size:12px;color:#888;margin:0;">DM2 Contabilidade · Mensagem automática, não responda.</p>`,
+    `</div>`,
+  ].join('\n');
+
+  const text = [
+    'Redefinição de senha — Admin DM2 Contabilidade',
+    '',
+    'Recebemos uma solicitação para redefinir a senha de acesso ao painel administrativo.',
+    '',
+    'Para criar uma nova senha, abra o link abaixo:',
+    opts.resetUrl,
+    '',
+    `Este link é válido até ${expiresStr} e pode ser usado uma única vez.`,
+    '',
+    'Se você não solicitou esta redefinição, ignore este e-mail.',
+    '',
+    '— DM2 Contabilidade',
+  ].join('\n');
+
+  try {
+    await transporter.sendMail({
+      from,
+      to: safeTo,
+      subject,
+      html,
+      text,
+    });
+    return true;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'unknown error';
+    console.error('[Email] Reset send failed:', message);
+    return false;
+  }
+}
+
+/**
  * Send the lead notification. Always returns a boolean: true if the SMTP
  * transport accepted the message, false if anything was missing or
  * failed. The caller never blocks the form on this result.

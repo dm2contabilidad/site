@@ -13,5 +13,6 @@ import { ADMIN_COOKIE_NAME, verifySessionToken } from './auth';
 export async function isAdminAuthenticated(): Promise<boolean> {
   const store = await cookies();
   const token = store.get(ADMIN_COOKIE_NAME)?.value;
-  return verifySessionToken(token) !== null;
+  const payload = await verifySessionToken(token);
+  return payload !== null;
 }

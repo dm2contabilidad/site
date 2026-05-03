@@ -10,7 +10,7 @@ import {
   clearLoginAttempts,
   createSessionToken,
   recordLoginAttempt,
-  verifyAdminPassword,
+  verifyAdminCredentials,
 } from '@/lib/admin/auth';
 import { isAdminAuthenticated } from '@/lib/admin/session';
 import { requireAdminClient } from '@/lib/supabase-admin';
@@ -48,10 +48,11 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
   }
 
   const password = String(formData.get('password') || '');
-  if (!verifyAdminPassword(password)) {
+  const userId = await verifyAdminCredentials(password);
+  if (!userId) {
     recordLoginAttempt(ipKey);
-    // Generic error — never reveal whether the password env is missing,
-    // wrong format, or just incorrect.
+    // Generic error — never reveal whether the DB is empty, env vars are
+    // missing, or the password is just wrong.
     return { ok: false, error: 'Senha incorreta.' };
   }
 
@@ -62,7 +63,7 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
   // the failure was config-related or otherwise.
   let token: string;
   try {
-    token = createSessionToken();
+    token = createSessionToken(userId);
   } catch {
     return { ok: false, error: 'Configuração de admin incompleta. Contate o suporte.' };
   }

@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import { isAdminAuthenticated } from '@/lib/admin/session';
 import { LoginForm } from './LoginForm';
 
 export const metadata: Metadata = {
@@ -6,7 +8,15 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function LoginPage() {
+// The middleware no longer bounces cookied-but-stale users away from
+// /login (that caused redirect loops). Instead we run the full async
+// session check here: a genuinely valid session goes straight to the
+// dashboard; a missing or stale cookie just renders the login form.
+export default async function LoginPage() {
+  if (await isAdminAuthenticated()) {
+    redirect('/admin/blog');
+  }
+
   return (
     <div className="min-h-[60vh] flex items-center justify-center">
       <div className="w-full max-w-sm">

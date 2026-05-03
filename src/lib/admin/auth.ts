@@ -1,5 +1,6 @@
 import 'server-only';
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { getAdminUser, getAdminUserById, seedInitialAdminFromEnv, verifyPassword } from './users';
 
 export { ADMIN_COOKIE_NAME, ADMIN_SESSION_TTL_SECONDS } from './constants';
 import { ADMIN_SESSION_TTL_SECONDS } from './constants';
@@ -8,16 +9,19 @@ import { ADMIN_SESSION_TTL_SECONDS } from './constants';
  * Admin session token (HMAC-signed cookie).
  *
  * Format:  base64url(payload).base64url(signature)
- * Payload: JSON { v: 1, sub: 'admin', iat: <unix>, exp: <unix> }
+ * Payload: JSON { v: 2, sub: <admin_users.id>, iat: <unix>, exp: <unix> }
  *
- * The token is symmetric and stateless. The server validates by recomputing
- * the HMAC with ADMIN_SESSION_SECRET and checking that exp > now. Rotating
- * ADMIN_SESSION_SECRET invalidates all existing sessions (intentional).
+ * The token is symmetric and stateless on the HMAC side, but verification
+ * additionally consults `admin_users.sessions_invalidated_at` so a
+ * password change immediately invalidates every cookie issued before it.
+ *
+ * Rotating ADMIN_SESSION_SECRET also invalidates every existing session
+ * (intentional — emergency cutoff).
  */
 
 interface SessionPayload {
-  v: 1;
-  sub: 'admin';
+  v: 2;
+  sub: string;
   iat: number;
   exp: number;
 }
@@ -32,16 +36,10 @@ function getSecret(): string {
   return secret;
 }
 
-function getAdminPassword(): string | null {
-  const pw = process.env.ADMIN_BLOG_PASSWORD;
-  if (!pw || pw.length < 8) return null;
-  return pw;
-}
-
-/** Returns true if admin auth is fully configured (password + secret). */
+/** Returns true if admin session signing is configured. */
 export function isAdminAuthConfigured(): boolean {
   try {
-    return Boolean(getAdminPassword()) && Boolean(getSecret());
+    return Boolean(getSecret());
   } catch {
     return false;
   }
@@ -73,26 +71,40 @@ function constantTimeStringEq(a: string, b: string): boolean {
   const bufA = Buffer.from(a, 'utf8');
   const bufB = Buffer.from(b, 'utf8');
   if (bufA.length !== bufB.length) {
-    // Run a constant-time op anyway to avoid even length-leak timing.
     timingSafeEqual(bufA, bufA);
     return false;
   }
   return timingSafeEqual(bufA, bufB);
 }
 
-/** Validate the password against ADMIN_BLOG_PASSWORD. */
-export function verifyAdminPassword(candidate: string): boolean {
-  const real = getAdminPassword();
-  if (!real || typeof candidate !== 'string') return false;
-  return constantTimeStringEq(candidate, real);
+/**
+ * Validate a candidate password against the persisted admin user. If
+ * `admin_users` is empty AND the legacy ADMIN_BLOG_PASSWORD env var is
+ * set, this seeds the initial row using the env value (one-shot
+ * bootstrap). Returns the admin user id on success, null otherwise.
+ */
+export async function verifyAdminCredentials(
+  candidate: string,
+): Promise<string | null> {
+  if (typeof candidate !== 'string' || candidate.length === 0) return null;
+
+  // Bootstrap path: empty DB + env vars present → create the admin row
+  // using the env password. Subsequent calls go through the DB only.
+  let user = await getAdminUser();
+  if (!user) {
+    user = await seedInitialAdminFromEnv();
+    if (!user) return null;
+  }
+
+  return verifyPassword(candidate, user.passwordHash) ? user.id : null;
 }
 
-/** Issue a new signed session token, valid for ADMIN_SESSION_TTL_SECONDS. */
-export function createSessionToken(): string {
+/** Issue a new signed session token for the given admin user id. */
+export function createSessionToken(userId: string): string {
   const now = Math.floor(Date.now() / 1000);
   const payload: SessionPayload = {
-    v: 1,
-    sub: 'admin',
+    v: 2,
+    sub: userId,
     iat: now,
     exp: now + ADMIN_SESSION_TTL_SECONDS,
   };
@@ -103,12 +115,16 @@ export function createSessionToken(): string {
 
 /**
  * Validate a session token. Returns the payload if valid, null otherwise.
- * Catches all errors silently — including a missing ADMIN_SESSION_SECRET
- * (which would throw inside sign()). Returning null means "not
- * authenticated" and lets callers redirect cleanly instead of throwing
- * a 500 that could leak environment state in the response body.
+ * Now async: also checks the user's sessions_invalidated_at so a password
+ * change immediately invalidates every cookie issued before it.
+ *
+ * Catches all errors silently so a missing ADMIN_SESSION_SECRET or a
+ * transient DB hiccup never escapes as a 500 — the caller treats null as
+ * "not authenticated" and redirects.
  */
-export function verifySessionToken(token: string | undefined | null): SessionPayload | null {
+export async function verifySessionToken(
+  token: string | undefined | null,
+): Promise<SessionPayload | null> {
   try {
     if (!token || typeof token !== 'string') return null;
     const parts = token.split('.');
@@ -121,14 +137,27 @@ export function verifySessionToken(token: string | undefined | null): SessionPay
     const json = base64urlDecode(payloadEncoded).toString('utf8');
     const payload = JSON.parse(json) as Partial<SessionPayload>;
     if (
-      payload?.v !== 1 ||
-      payload.sub !== 'admin' ||
+      payload?.v !== 2 ||
+      typeof payload.sub !== 'string' ||
+      payload.sub.length === 0 ||
       typeof payload.exp !== 'number' ||
       typeof payload.iat !== 'number'
     ) {
       return null;
     }
     if (payload.exp <= Math.floor(Date.now() / 1000)) return null;
+
+    // Cross-check that the user still exists and that the session was
+    // not invalidated after this token was issued.
+    const user = await getAdminUserById(payload.sub);
+    if (!user) return null;
+    const invalidatedAt = Math.floor(
+      new Date(user.sessionsInvalidatedAt).getTime() / 1000,
+    );
+    if (Number.isFinite(invalidatedAt) && payload.iat <= invalidatedAt) {
+      return null;
+    }
+
     return payload as SessionPayload;
   } catch {
     return null;
@@ -136,9 +165,9 @@ export function verifySessionToken(token: string | undefined | null): SessionPay
 }
 
 // ---------------------------------------------------------------------------
-// In-memory rate limiter for the login endpoint.
-// Per-process, suitable for small admin login traffic. Resets on cold start.
-// 5 failed attempts per 15 minutes per IP.
+// In-memory rate limiter for the login endpoint and password-reset
+// requests. Per-process, suitable for low admin traffic. Resets on cold
+// start. 5 events per 15 minutes per IP.
 // ---------------------------------------------------------------------------
 
 const ATTEMPT_WINDOW_MS = 15 * 60 * 1000;

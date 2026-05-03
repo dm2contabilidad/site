@@ -20,22 +20,29 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasCookie = Boolean(request.cookies.get(ADMIN_COOKIE_NAME)?.value);
 
-  // The login page is publicly reachable; everyone else needs the cookie.
-  const isLoginPage = pathname === '/admin/blog/login';
+  // Public admin pages: login + the password-reset request page + the
+  // confirm page reached from the email link. Everything else needs a
+  // cookie.
+  const isPublicAuthPage =
+    pathname === '/admin/blog/login'
+    || pathname === '/admin/blog/password-reset'
+    || pathname === '/admin/blog/password-reset/confirm';
 
-  if (!hasCookie && !isLoginPage) {
+  if (!hasCookie && !isPublicAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = '/admin/blog/login';
     url.search = '';
     return NextResponse.redirect(url);
   }
 
-  if (hasCookie && isLoginPage) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/admin/blog';
-    url.search = '';
-    return NextResponse.redirect(url);
-  }
+  // We intentionally do NOT bounce a request with a cookie away from
+  // the login page here. A cookie may be HMAC-valid but
+  // semantically stale (e.g. issued under an older session schema, or
+  // the user was deleted). If we bounced based on cookie presence
+  // alone, and the dashboard then rejected that cookie, we'd loop
+  // forever. The login page itself runs the full async check
+  // (isAdminAuthenticated) and redirects to the dashboard when the
+  // session is genuinely valid.
 
   return NextResponse.next();
 }

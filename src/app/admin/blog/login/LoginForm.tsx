@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { loginAction } from '../actions';
@@ -58,6 +59,15 @@ export function LoginForm() {
       >
         {isPending ? 'Entrando…' : 'Entrar'}
       </button>
+
+      <div className="pt-2 text-right">
+        <Link
+          href="/admin/blog/password-reset"
+          className="text-xs text-neutral-600 hover:text-navy-900 hover:underline"
+        >
+          Esqueci minha senha
+        </Link>
+      </div>
     </form>
   );
 }
