@@ -1,150 +1,164 @@
-# Entrega — Sitio DM2 Contabilidade
+<!--
+  NOTA INTERNA (no visible no .docx exportado, no GitHub render, etc.).
 
-Documento de entrega del sitio institucional reconstruido para DM2
+  Este documento foi escrito em português brasileiro porque é o
+  documento de entrega final destinado ao cliente DM2 Contabilidade
+  (Brasil). Não é documentação técnica interna — é a peça que vai
+  para a mão do cliente.
+
+  Se for editar conteúdo ou regenerar o .docx, mantenha o português:
+    pandoc docs/ENTREGA-DM2-CONTABILIDADE.md \
+      -o docs/ENTREGA-DM2-CONTABILIDADE.docx \
+      --from=gfm --to=docx --standalone
+-->
+
+# Entrega — Site DM2 Contabilidade
+
+Documento de entrega do site institucional reconstruído para a DM2
 Contabilidade.
 
 | Item | Valor |
 |---|---|
 | Cliente | DM2 Contabilidade |
-| Dominio canónico | https://dm2contabilidade.com.br |
-| Deploy actual (provisional) | https://site-tau-gray-68.vercel.app |
-| Repositorio | https://github.com/dm2contabilidad/site |
-| Backend | Supabase (proyecto `zyisowurfrutywmkhiki`) |
-| Hosting | Vercel |
-| Fecha de esta entrega | 03 de mayo de 2026 |
+| Domínio canônico | https://dm2contabilidade.com.br |
+| Deploy atual (provisório) | https://site-tau-gray-68.vercel.app |
+| Repositório | https://github.com/dm2contabilidad/site |
+| Backend | Supabase (projeto `zyisowurfrutywmkhiki`) |
+| Hospedagem | Vercel |
+| Data desta entrega | 03 de maio de 2026 |
 
 ---
 
-## 1. Resumen del proyecto
+## 1. Resumo do projeto
 
-### Qué es
+### O que é
 
-Sitio institucional de un escritorio de contabilidad fundado en 2003 en
-Vila Mariana, São Paulo. Reemplaza la versión anterior por una arquitectura
-moderna, optimizada para SEO local, citabilidad por motores generativos
-(ChatGPT, Claude, Perplexity, Google AI Overviews) y captación de leads
-calificados.
+Site institucional de um escritório de contabilidade fundado em 2003,
+na Vila Mariana, em São Paulo. Substitui a versão anterior por uma
+arquitetura moderna, otimizada para SEO local, citabilidade por
+mecanismos generativos (ChatGPT, Claude, Perplexity, Google AI
+Overviews) e captação de leads qualificados.
 
 ### Objetivo
 
-- Posicionar a DM2 en búsquedas de "contabilidade em São Paulo" y
-  variantes específicas (advogados, profissionais da saúde, negócios
+- Posicionar a DM2 em buscas por "contabilidade em São Paulo" e
+  variações específicas (advogados, profissionais da saúde, negócios
   digitais).
-- Ser citable por IA cuando alguien pregunta "qual contador em São Paulo
+- Ser citado por IAs quando alguém pergunta "qual contador em São Paulo
   para advogados / médicos / negócio digital".
-- Captar leads cualificados con atribución completa (UTMs, click-IDs,
-  landing-page) y notificación inmediata por email al equipo comercial.
-- Permitir publicación editorial autónoma del blog desde un panel propio,
-  sin depender del equipo técnico para cada post.
+- Captar leads qualificados com atribuição completa (UTMs, click-IDs,
+  landing-page) e notificação imediata por e-mail ao time comercial.
+- Permitir publicação editorial autônoma do blog a partir de um painel
+  próprio, sem depender do time técnico para cada post.
 
-### Alcance
+### Escopo
 
-- 12 páginas públicas (institucional + servicios + especialidades + blog
-  + contato + legales).
-- Blog con 6 artículos editoriales publicados, sistema de FAQs y
-  servicios relacionados, soporte para artículos pillar y evergreen.
-- Panel administrativo `/admin/blog` con autenticación HMAC, upload real
-  de imágenes a Supabase Storage, dashboard de métricas operativas y
-  flow completo de recuperación de contraseña por email.
-- Captación de leads vía formulario protegido por Cloudflare Turnstile,
-  almacenamiento en Supabase con RLS, notificación SMTP al equipo.
+- 12 páginas públicas (institucional + serviços + especialidades + blog
+  + contato + páginas legais).
+- Blog com 6 artigos editoriais publicados, sistema de FAQs e serviços
+  relacionados, suporte para artigos pillar e evergreen.
+- Painel administrativo `/admin/blog` com autenticação HMAC, upload
+  real de imagens para o Supabase Storage, dashboard de métricas
+  operacionais e fluxo completo de recuperação de senha por e-mail.
+- Captação de leads via formulário protegido por Cloudflare Turnstile,
+  armazenamento no Supabase com RLS, notificação SMTP para o time.
 - Schema markup completo: Organization, AccountingService, Service,
   FAQPage, BreadcrumbList, BlogPosting, Person, ItemList.
-- Sitemap.xml dinámico, robots.txt con allow-list para crawlers de IA,
+- Sitemap.xml dinâmico, robots.txt com allow-list para crawlers de IA,
   llms.txt institucional.
 
-### Páginas principales
+### Páginas principais
 
-| Ruta | Propósito |
+| Rota | Propósito |
 |---|---|
 | `/` | Home institucional |
-| `/quem-somos` | Historia + responsable técnico (Danilo Brito de Morais) |
-| `/servicos-contabeis` | Hub de los 4 servicios |
-| `/servicos-contabeis/{slug}` | Páginas de servicio (4) |
-| `/contabilidade-para-advogados` | Especialidad |
-| `/contabilidade-para-profissionais-da-saude` | Especialidad |
-| `/contabilidade-para-negocios-digitais` | Especialidad |
-| `/blog` | Index del blog con filtros por categoría |
-| `/blog/{slug}` | Artículo del blog |
-| `/contato` | Formulario + datos de contacto |
-| `/obrigado` | Confirmación post-envío de formulario |
-| `/privacidade`, `/termos` | Legales |
+| `/quem-somos` | História + responsável técnico (Danilo Brito de Morais) |
+| `/servicos-contabeis` | Hub dos 4 serviços |
+| `/servicos-contabeis/{slug}` | Páginas de serviço (4) |
+| `/contabilidade-para-advogados` | Especialidade |
+| `/contabilidade-para-profissionais-da-saude` | Especialidade |
+| `/contabilidade-para-negocios-digitais` | Especialidade |
+| `/blog` | Index do blog com filtros por categoria |
+| `/blog/{slug}` | Artigo do blog |
+| `/contato` | Formulário + dados de contato |
+| `/obrigado` | Confirmação após o envio do formulário |
+| `/privacidade`, `/termos` | Páginas legais |
 
 ---
 
-## 2. Identidad visual
+## 2. Identidade visual
 
 ### Marca
 
-DM2 Contabilidade. Logo en SVG (`public/images/logo/dm2-contabilidade.svg`),
-sirve tanto en navegación como en favicons y assets institucionales.
+DM2 Contabilidade. Logo em SVG (`public/images/logo/dm2-contabilidade.svg`),
+usado tanto na navegação quanto em favicons e ativos institucionais.
 
 ### Paleta institucional
 
-Tres colores marca, con escalas Tailwind derivadas:
+Três cores de marca, com escalas Tailwind derivadas:
 
 | Token | Hex | Uso |
 |---|---|---|
-| `brand-navy` | `#0C152A` | Fondos institucionales oscuros, headers, footers |
-| `brand-blue` | `#07475D` | H2/H3, botón secundario, enlaces |
+| `brand-navy` | `#0C152A` | Fundos institucionais escuros, headers, footers |
+| `brand-blue` | `#07475D` | H2/H3, botão secundário, links |
 | `brand-gold` | `#E0B25B` | CTA principal, plecas, acentos |
-| `brand-white` | `#FFFFFF` | Texto sobre navy, fondo neutro |
+| `brand-white` | `#FFFFFF` | Texto sobre navy, fundo neutro |
 
-Uso del oro: con moderación. Plecas verticales en lugar de bullets,
-botones primarios "Entrar em contato", subrayados sutiles. **No** se usa
-para fondos extensos ni para resaltar texto largo.
+Uso do dourado: com moderação. Plecas verticais no lugar de bullets,
+botões primários "Entrar em contato", sublinhados sutis. **Não** é usado
+em fundos extensos nem para destacar texto longo.
 
-### Tipografías
+### Tipografias
 
-Cuatro familias Google Fonts cargadas vía `next/font/google` con
+Quatro famílias do Google Fonts carregadas via `next/font/google` com
 self-hosting automático:
 
-| Familia | Uso | Token |
+| Família | Uso | Token |
 |---|---|---|
-| **Outfit** | Texto base (párrafos, navegación) | `--font-base` |
-| **Plus Jakarta Sans** | Texto de soporte | `--font-aux` |
+| **Outfit** | Texto base (parágrafos, navegação) | `--font-base` |
+| **Plus Jakarta Sans** | Texto de apoio | `--font-aux` |
 | **Playfair Display** | Display (H1/H2 grandes, hero) | `--font-display` |
 | **Sora** | Microcopy / labels | `--font-label` |
 
 ### Lógica visual
 
-- **Hero family**: todas las páginas principales comparten un patrón de
-  hero — imagen full-bleed con overlay navy triple (35/55/80 %),
-  breadcrumb absoluto arriba, contenido anclado abajo o centrado, hairline
-  oro inferior, altura `70-80vh`. Esto crea coherencia inmediata sin
-  parecer una plantilla.
-- **Tarjetas y cards**: bordes finos navy 200, sombras suaves, hover
-  gold 600 sutil. Sin neumorfismo, sin glassmorphism.
-- **Plecas verticales oro**: reemplazan bullets en listas editoriales
-  (ej. perfil de cliente en `/quem-somos`). Da peso editorial, no
-  pesado.
+- **Hero family**: todas as páginas principais compartilham um padrão
+  de hero — imagem full-bleed com overlay navy triplo (35/55/80 %),
+  breadcrumb absoluto no topo, conteúdo ancorado embaixo ou
+  centralizado, hairline dourada inferior, altura `70-80vh`. Isso cria
+  coerência imediata sem parecer template.
+- **Cards e cartões**: bordas finas navy 200, sombras suaves, hover
+  gold 600 sutil. Sem neumorphism, sem glassmorphism.
+- **Plecas verticais douradas**: substituem bullets em listas
+  editoriais (ex.: perfil de cliente em `/quem-somos`). Dão peso
+  editorial sem pesar.
 
-### Tono general
+### Tom geral
 
-Sobrio, institucional, contable. **Sin** clichés de SaaS ("revolutionize",
-"transformamos"), **sin** cara de IA, **sin** copy hipster. Voz cercana,
-técnica cuando hace falta (Simples Nacional, IBS, CBS, eSocial), siempre
-profesional.
+Sóbrio, institucional, contábil. **Sem** clichês de SaaS
+("revolucionamos", "transformamos"), **sem** cara de IA, **sem** copy
+hipster. Voz próxima, técnica quando necessário (Simples Nacional, IBS,
+CBS, eSocial), sempre profissional.
 
-### Por qué esta dirección
+### Por que essa direção
 
-DM2 es un escritorio de 22 años con cartera de empresas medianas que
-valoran continuidad y rigor. La identidad refuerza esos atributos: navy
-profundo + oro discreto = solidez + valor sin estridencia. La paleta y
-tipografía buscan parecer un escritorio profesional senior, no una
-startup.
+A DM2 é um escritório de 22 anos, com carteira de empresas médias que
+valorizam continuidade e rigor. A identidade reforça esses atributos:
+navy profundo + dourado discreto = solidez + valor sem estridência. A
+paleta e a tipografia buscam parecer um escritório profissional sênior,
+não uma startup.
 
 ---
 
-## 3. Arquitectura del sitio
+## 3. Arquitetura do site
 
-### Estructura de páginas
+### Estrutura de páginas
 
 ```
 /                                 Home institucional
-├── /quem-somos                   Historia + responsable técnico
+├── /quem-somos                   História + responsável técnico
 │
-├── /servicos-contabeis           Hub de servicios
+├── /servicos-contabeis           Hub de serviços
 │   ├── /consultoria-contabil
 │   ├── /planejamento-tributario
 │   ├── /gestao-fiscal-e-tributaria
@@ -154,325 +168,331 @@ startup.
 ├── /contabilidade-para-profissionais-da-saude         (URLs root-level
 └── /contabilidade-para-negocios-digitais              para SEO local)
 │
-├── /blog                         Listado paginado del blog
-│   └── /blog/[slug]              Artículo individual
-│   └── /blog/categoria/[slug]    Filtro por categoría
+├── /blog                         Listagem paginada do blog
+│   └── /blog/[slug]              Artigo individual
+│   └── /blog/categoria/[slug]    Filtro por categoria
 │
-├── /contato                      Formulario + datos NAP
-├── /obrigado                     Página post-envío
+├── /contato                      Formulário + dados NAP
+├── /obrigado                     Página pós-envio
 │
-├── /privacidade                  Política de privacidad
-└── /termos                       Términos de uso
+├── /privacidade                  Política de privacidade
+└── /termos                       Termos de uso
 ```
 
 ### Admin
 
 ```
-/admin/blog                       Listado y gestión de posts
-├── /admin/blog/new               Crear post
+/admin/blog                       Listagem e gestão de posts
+├── /admin/blog/new               Criar post
 ├── /admin/blog/[id]              Editar post
-├── /admin/blog/login             Acceso (HMAC session)
-├── /admin/blog/password-reset    Solicitar recuperación
-│   └── /confirm?token=…          Definir nueva contraseña
-└── /admin/analytics              Dashboard operativo
+├── /admin/blog/login             Acesso (sessão HMAC)
+├── /admin/blog/password-reset    Solicitar recuperação
+│   └── /confirm?token=…          Definir nova senha
+└── /admin/analytics              Dashboard operacional
 ```
 
-### Decisiones arquitectónicas
+### Decisões arquiteturais
 
-- **URLs de especialidades root-level** (`/contabilidade-para-advogados`)
-  en lugar de `/para/advogados`. Razón: mejor signal de keyword en SEO
-  local. Los URLs viejos redirigen permanentemente (301) en
-  `next.config.ts`.
-- **Hub de servicios** (`/servicos-contabeis`) intermedio, breadcrumb
-  con tres niveles. Las especialidades NO tienen hub intermedio
-  (breadcrumb de 2 niveles).
-- **Blog separado** del marketing, con su propio hero y categorías.
+- **URLs de especialidades em root-level**
+  (`/contabilidade-para-advogados`) em vez de `/para/advogados`.
+  Motivo: melhor sinal de keyword no SEO local. As URLs antigas
+  redirecionam permanentemente (301) em `next.config.ts`.
+- **Hub de serviços** (`/servicos-contabeis`) intermediário, breadcrumb
+  com três níveis. As especialidades NÃO têm hub intermediário
+  (breadcrumb de 2 níveis).
+- **Blog separado** do marketing, com hero e categorias próprias.
 
 ---
 
-## 4. Lógica del contenido
+## 4. Lógica do conteúdo
 
 ### H1 / H2 / H3
 
-Cada H1 incluye **keyword principal + geo** (cuando aplica):
+Cada H1 inclui **keyword principal + geo** (quando aplicável):
 
 | Página | H1 |
 |---|---|
 | Home | "Contabilidade estratégica em São Paulo" |
 | Hub serviços | "Serviços Contábeis em São Paulo" |
-| Servicio | "{Servicio} em São Paulo" |
-| Especialidad | "Contabilidade para {nicho} em São Paulo" |
+| Serviço | "{Serviço} em São Paulo" |
+| Especialidade | "Contabilidade para {nicho} em São Paulo" |
 | Blog | "Blog de Contabilidade em São Paulo" |
 | Contato | "Fale com a DM2 Contabilidade em São Paulo" |
 | Quem Somos | "Escritório de contabilidade em São Paulo desde 2003" |
 
-**Una sola H1 por página** (validado en auditoría). H2/H3 estructuran
-secciones temáticas, no decoración.
+**Uma única H1 por página** (validado em auditoria). H2/H3 estruturam
+seções temáticas, não decoração.
 
 ### Lógica SEO
 
-- **Title tags**: cada página define su propio title vía `createMetadata`
-  con sufijo de marca explícito. Patrón: `{Pillar} | DM2 Contabilidade
-  em São Paulo`.
+- **Title tags**: cada página define seu próprio title via
+  `createMetadata` com sufixo de marca explícito. Padrão: `{Pillar} |
+  DM2 Contabilidade em São Paulo`.
 - **Meta description**: 140-160 caracteres por página, escrita
-  manualmente (no generada).
-- **Canonical**: cada página declara su URL canónica absoluta sobre el
-  dominio `dm2contabilidade.com.br`.
-- **Open Graph + Twitter Card**: imagen 1200×630, título, descripción
-  y URL en cada página. Fallback a `home-og-sao-paulo.webp`.
-- **Sitemap**: generado dinámicamente en `/sitemap.xml`, incluye todas
-  las páginas públicas con `lastmod`, `changefreq`, `priority`.
-- **Robots**: bloquea `/admin/`, `/obrigado`, `/api/`. Permite y
-  whitelistea explícitamente bots de IA (GPTBot, Google-Extended,
+  manualmente (não gerada).
+- **Canonical**: cada página declara sua URL canônica absoluta sobre o
+  domínio `dm2contabilidade.com.br`.
+- **Open Graph + Twitter Card**: imagem 1200×630, título, descrição e
+  URL em cada página. Fallback para `home-og-sao-paulo.webp`.
+- **Sitemap**: gerado dinamicamente em `/sitemap.xml`, inclui todas as
+  páginas públicas com `lastmod`, `changefreq`, `priority`.
+- **Robots**: bloqueia `/admin/`, `/obrigado`, `/api/`. Permite e
+  whitelista explicitamente bots de IA (GPTBot, Google-Extended,
   ClaudeBot, PerplexityBot, OAI-SearchBot).
 
-### Lógica GEO (citabilidad por IA)
+### Lógica GEO (citabilidade por IA)
 
-- **Intros densas autocontenidas** (134-167 palabras) en servicios y
-  especialidades, escritas para ser citables como pasaje completo por
-  un asistente generativo. Cada intro contiene: definición + a quién
-  aplica + qué incluye + dato concreto + diferencial DM2.
-- **FAQs con respuestas directas** y datos numéricos (R$ 81.000 limite
-  Simples; alíquotas eSocial; Anexo IV; etc.) — formato ideal para
-  AI Overviews y citas en Perplexity.
-- **llms.txt** institucional en `/llms.txt`: resumen estructurado del
-  escritorio para asistentes que lo prefieren.
-- **Schema markup**: `Organization`, `AccountingService` (subtipo más
-  preciso que `LocalBusiness` para una firma contable), `Service` por
-  cada servicio, `FAQPage`, `BreadcrumbList`, `Person` (Danilo Brito de
-  Morais como responsable técnico), `BlogPosting` por cada artículo,
-  `ItemList` en index del blog.
+- **Intros densas autocontidas** (134-167 palavras) em serviços e
+  especialidades, escritas para serem citáveis como passagem completa
+  por um assistente generativo. Cada intro contém: definição + a quem
+  se aplica + o que inclui + dado concreto + diferencial DM2.
+- **FAQs com respostas diretas** e dados numéricos (R$ 81.000 limite
+  Simples; alíquotas eSocial; Anexo IV; etc.) — formato ideal para AI
+  Overviews e citações no Perplexity.
+- **llms.txt** institucional em `/llms.txt`: resumo estruturado do
+  escritório para assistentes que o preferem.
+- **Schema markup**: `Organization`, `AccountingService` (subtipo mais
+  preciso que `LocalBusiness` para uma firma contábil), `Service` por
+  serviço, `FAQPage`, `BreadcrumbList`, `Person` (Danilo Brito de
+  Morais como responsável técnico), `BlogPosting` por artigo,
+  `ItemList` no index do blog.
 
-### Featured posts en home (lógica híbrida)
+### Featured posts no home (lógica híbrida)
 
-El home muestra siempre **3 posts**. Lógica:
+O home mostra sempre **3 posts**. Lógica:
 
-1. **Prioridad 1**: posts con `featured_on_home = true`, ordenados por
-   `featured_order ASC` (menor primero) y luego por `published_at DESC`.
-2. **Prioridad 2**: si quedan slots, se rellena con los posts publicados
-   más recientes que no estén ya destacados.
+1. **Prioridade 1**: posts com `featured_on_home = true`, ordenados por
+   `featured_order ASC` (menor primeiro) e depois por `published_at
+   DESC`.
+2. **Prioridade 2**: se sobrar slot, é preenchido com os posts
+   publicados mais recentes que ainda não estejam destacados.
 
-→ Resultado: el editor puede fijar 0, 1, 2 o 3 posts manualmente. El home
-nunca queda incompleto.
+→ Resultado: o editor pode fixar 0, 1, 2 ou 3 posts manualmente. O home
+nunca fica incompleto.
 
 ### FAQs
 
-- Editables por post desde el admin (sección "FAQs" del editor).
-- Toggle `faq_enabled` controla si se renderizan en la página pública.
-- Cuando están activas, se renderizan al final del post y se inyecta
-  schema `FAQPage` automáticamente para Rich Results.
+- Editáveis por post a partir do admin (seção "FAQs" do editor).
+- Toggle `faq_enabled` controla se aparecem na página pública.
+- Quando ativas, são renderizadas no fim do post e o schema `FAQPage`
+  é injetado automaticamente para Rich Results.
 
-### Servicios relacionados
+### Serviços relacionados
 
-- Cada post puede vincular N servicios (`blog_post_related_services`).
-- En la página del post se renderizan como cards al final del cuerpo.
-- En las páginas de servicio/especialidad, se listan los posts más
-  recientes que mencionan ese servicio (sección "Conteúdos relacionados").
+- Cada post pode vincular N serviços
+  (`blog_post_related_services`).
+- Na página do post são renderizados como cards no fim do corpo.
+- Nas páginas de serviço/especialidade, são listados os posts mais
+  recentes que mencionam aquele serviço (seção "Conteúdos
+  relacionados").
 
 ---
 
-## 5. Blog y panel administrativo
+## 5. Blog e painel administrativo
 
-### Acceso
+### Acesso
 
 - URL: `/admin/blog/login`
-- Autenticación: contraseña única (single-tenant) protegida por hash
-  `scrypt` en la tabla `admin_users`.
-- Sesión: cookie HMAC firmada con `ADMIN_SESSION_SECRET`, válida 8 horas.
-- Bootstrap inicial: en el primer acceso con la tabla vacía, se usa
-  `ADMIN_BLOG_PASSWORD` y `ADMIN_EMAIL` como semilla. Después, la
-  contraseña vive solo en DB.
+- Autenticação: senha única (single-tenant) protegida por hash
+  `scrypt` na tabela `admin_users`.
+- Sessão: cookie HMAC assinado com `ADMIN_SESSION_SECRET`, válida por
+  8 horas.
+- Bootstrap inicial: no primeiro acesso com a tabela vazia, o sistema
+  usa `ADMIN_BLOG_PASSWORD` e `ADMIN_EMAIL` como semente. Depois disso,
+  a senha vive apenas no banco.
 
-### Recuperación de contraseña
+### Recuperação de senha
 
-1. En el login, click "Esqueci minha senha".
-2. Click en "Enviar link de redefinição" → se envía un email a
-   `ADMIN_EMAIL` con un link de un solo uso, válido 30 minutos.
-3. El destinatario abre el link, define una nueva contraseña.
-4. Sesiones anteriores caen al instante (campo
-   `sessions_invalidated_at`).
+1. No login, clique em "Esqueci minha senha".
+2. Clique em "Enviar link de redefinição" → um e-mail é enviado para
+   `ADMIN_EMAIL` com um link de uso único, válido por 30 minutos.
+3. O destinatário abre o link e define uma nova senha.
+4. Sessões anteriores caem na hora (campo `sessions_invalidated_at`).
 
-Si en algún momento el flow de email no está disponible, hay un
-fallback de emergencia: `node scripts/admin-set-password.mjs` (corre
-local, genera SQL para pegar en Supabase).
+Se em algum momento o fluxo de e-mail não estiver disponível, há um
+fallback de emergência: `node scripts/admin-set-password.mjs` (roda
+local, gera SQL para colar no Supabase).
 
-### Crear un post
+### Criar um post
 
-1. `/admin/blog` → click "+ Novo post".
-2. Rellenar campos obligatorios (título, slug, excerto, status, autor).
-3. Subir imagen de capa (drag o file picker, sube a Supabase Storage
-   automáticamente, devuelve URL).
+1. `/admin/blog` → clique em "+ Novo post".
+2. Preencha os campos obrigatórios (título, slug, excerto, status,
+   autor).
+3. Faça upload da imagem de capa (drag ou file picker; sobe para o
+   Supabase Storage automaticamente e devolve a URL).
 4. Status:
-   - `draft`: no visible públicamente, sin fecha requerida.
-   - `scheduled`: requiere fecha futura, aparece automáticamente al
-     llegar la hora.
-   - `published`: visible al instante.
-   - `archived`: oculto del público pero conservado.
-5. Marcar `Featured no home` opcionalmente, con su `Ordem`.
-6. Añadir FAQs y servicios relacionados.
-7. Click "Criar post" → redirige a la pantalla de edición con banner
-   verde "Post criado com sucesso".
+   - `draft`: invisível ao público, sem exigir data.
+   - `scheduled`: exige data futura, aparece automaticamente quando a
+     hora chega.
+   - `published`: visível no ato.
+   - `archived`: oculto do público mas preservado.
+5. Marque `Featured no home` opcionalmente, com sua `Ordem`.
+6. Adicione FAQs e serviços relacionados.
+7. Clique em "Criar post" → redireciona para a tela de edição com
+   banner verde "Post criado com sucesso".
 
-### Editar un post
+### Editar um post
 
-1. `/admin/blog` → click en el título del post o en "Editar".
-2. Modificar lo que haga falta.
-3. Click "Salvar alterações" → banner verde "Alterações salvas",
-   scroll automático arriba.
+1. `/admin/blog` → clique no título do post ou em "Editar".
+2. Altere o que for preciso.
+3. Clique em "Salvar alterações" → banner verde "Alterações salvas",
+   scroll automático para o topo.
 
-### Programar publicación
+### Programar publicação
 
-1. Crear/editar post con `status = scheduled`.
-2. Definir `Data de publicação` con un valor futuro.
-3. El post aparece automáticamente en `/blog` cuando la fecha llega
-   — sin necesidad de intervención manual ni de redeploy.
+1. Crie/edite um post com `status = scheduled`.
+2. Defina `Data de publicação` com um valor futuro.
+3. O post aparece automaticamente em `/blog` quando a data chega — sem
+   intervenção manual nem redeploy.
 
-### Subir imagen de capa
+### Subir imagem de capa
 
-- Drag-and-drop o file picker dentro del formulario.
-- Tamaño recomendado: **1600 × 900 px**, proporción **16:9**.
-- Formatos aceptados: WebP, JPEG, PNG, AVIF. Hasta **5 MB**.
-- Almacenamiento: bucket público `blog-covers` en Supabase Storage.
-- La URL pública se rellena automáticamente en el campo
+- Drag-and-drop ou file picker dentro do formulário.
+- Tamanho recomendado: **1600 × 900 px**, proporção **16:9**.
+- Formatos aceitos: WebP, JPEG, PNG, AVIF. Até **5 MB**.
+- Armazenamento: bucket público `blog-covers` no Supabase Storage.
+- A URL pública é preenchida automaticamente no campo
   `cover_image_url`.
 
 ### Featured
 
 - Toggle `Mostrar no home` por post.
-- Campo `Ordem (menor primeiro)`: si hay 2 destacados, el de orden 0
-  va primero.
-- Si no marcás ninguno, el home se autocompleta con los 3 más recientes.
-- Si marcás 1 o 2, se rellena lo que falta con los más recientes.
+- Campo `Ordem (menor primeiro)`: se houver 2 destaques, o de ordem 0
+  vem primeiro.
+- Se você não marcar nenhum, o home se autocompleta com os 3 mais
+  recentes.
+- Se marcar 1 ou 2, o que faltar é preenchido com os mais recentes.
 
 ### FAQs
 
-- Sección "FAQs" del formulario.
-- Botón "+ Adicionar FAQ" abre input de pergunta + resposta.
-- Botones ↑ ↓ para reordenar, "Remover" para borrar.
-- Toggle `Renderizar FAQ no post` (sección "SEO") controla si se
-  muestran y si se emite el schema FAQPage.
+- Seção "FAQs" do formulário.
+- Botão "+ Adicionar FAQ" abre input de pergunta + resposta.
+- Botões ↑ ↓ para reordenar; "Remover" para apagar.
+- Toggle `Renderizar FAQ no post` (seção "SEO") controla se aparecem e
+  se o schema FAQPage é emitido.
 
-### Servicios relacionados
+### Serviços relacionados
 
-- Sección "Serviços relacionados" del formulario.
-- Checklist contra los 4 servicios reales del sitio. Marcás los que
-  apliquen.
-- Se renderizan como cards al final del post.
+- Seção "Serviços relacionados" do formulário.
+- Checklist contra os 4 serviços reais do site. Marque os que se
+  aplicam.
+- Renderizados como cards no fim do post.
 
 ### Dashboard `/admin/analytics`
 
-Lectura rápida del estado operativo. Pestañas:
+Leitura rápida do estado operacional. Abas:
 
 **Blog:**
 - KPIs: publicados / agendados / rascunhos / arquivados.
-- Featured manual (lista actual).
-- Próximos a publicar (programados futuros).
-- Últimos publicados (5 más recientes).
+- Featured manual (lista atual).
+- Próximos a publicar (agendados futuros).
+- Últimos publicados (5 mais recentes).
 
 **Leads:**
-- Totales y ventanas: 24 h / 7 d / 30 d.
-- Con `gclid`, con `fbclid`, con UTM, sin origen identificada.
-- Sparkline de actividad últimos 14 días.
-- Breakdowns: por origen inferida, por `utm_source`, por landing page,
+- Totais e janelas: 24 h / 7 d / 30 d.
+- Com `gclid`, com `fbclid`, com UTM, sem origem identificada.
+- Sparkline de atividade dos últimos 14 dias.
+- Breakdowns: por origem inferida, por `utm_source`, por landing page,
   por status interno.
-- Tabla de los 8 leads más recientes.
+- Tabela dos 8 leads mais recentes.
 
-**Inferencia de origen** (heurística transparente):
+**Inferência de origem** (heurística transparente):
 1. `utm_source` → `UTM · {valor}`
 2. `gclid` → "Google Ads (gclid)"
 3. `fbclid` → "Meta Ads (fbclid)"
-4. `referrer` hostname (Google orgánico, Bing, ChatGPT, Perplexity,
+4. `referrer` hostname (Google orgânico, Bing, ChatGPT, Perplexity,
    Claude, LinkedIn, Meta…)
-5. Sin señal → "Directo"
+5. Sem sinal → "Direto"
 
 ---
 
-## 6. Formulario y captación de leads
+## 6. Formulário e captação de leads
 
-### Qué guarda el formulario
+### O que o formulário guarda
 
-Campos del usuario:
+Campos do usuário:
 - `nome`, `email`, `telefone`, `empresa` (opcional),
   `servico_interesse` (select), `mensagem` (opcional).
 
-Atribución capturada automáticamente (todo persistido):
-- `origem_pagina` — pathname desde donde se envió.
-- `landing_page` — primera URL visitada en la sesión (first-touch).
-- `referrer` — `document.referrer` capturado al primer hit.
+Atribuição capturada automaticamente (tudo persistido):
+- `origem_pagina` — pathname de onde foi enviado.
+- `landing_page` — primeira URL visitada na sessão (first-touch).
+- `referrer` — `document.referrer` capturado no primeiro hit.
 - `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`,
-  `utm_term` — capturados de la URL al entrar al sitio, persistidos en
+  `utm_term` — capturados da URL ao entrar no site, persistidos em
   `sessionStorage`.
 - `gclid` — Google Ads click ID.
 - `fbclid` — Meta (Facebook) click ID.
-- `user_agent`, `ip_hash` (SHA-256 del IP, no IP raw).
+- `user_agent`, `ip_hash` (SHA-256 do IP, não o IP cru).
 
-### Flujo
+### Fluxo
 
-1. Usuario llena el form en `/contato`.
-2. Cloudflare Turnstile valida que no es bot.
-3. Server action sanitiza, valida con Zod, inserta en `leads` (Supabase).
-4. Si SMTP está configurado, envía email a `MAIL_TO` con todos los
-   campos + sección de atribución completa.
-5. Redirect a `/obrigado`.
+1. Usuário preenche o formulário em `/contato`.
+2. Cloudflare Turnstile valida que não é bot.
+3. Server action sanitiza, valida com Zod, insere em `leads` (Supabase).
+4. Se SMTP estiver configurado, envia e-mail para `MAIL_TO` com todos
+   os campos + seção de atribuição completa.
+5. Redireciona para `/obrigado`.
 
-### Notificación SMTP
+### Notificação SMTP
 
-Email institucional sobrio, lista en HTML con dos secciones (datos del
-lead + atribución). El asunto incluye nombre y servicio:
-`Novo lead: {nome} — {serviço}`.
+E-mail institucional sóbrio, lista em HTML com duas seções (dados do
+lead + atribuição). O assunto inclui nome e serviço: `Novo lead:
+{nome} — {serviço}`.
 
-Si el SMTP no está configurado, el lead **se guarda igual** en Supabase
-y solo se omite el email (sin error al usuario).
+Se o SMTP não estiver configurado, o lead **é salvo do mesmo jeito**
+no Supabase e apenas o e-mail é omitido (sem erro para o usuário).
 
-### Lectura de leads
+### Leitura de leads
 
-Hoy: dashboard `/admin/analytics` (read-only). El editor del lead (cambiar
-`status`, agregar `notas`) **no está implementado** — se gestiona desde
-el dashboard de Supabase. Recomendación: si la operativa lo pide,
-agregar pestaña `/admin/leads` editable en una iteración futura.
+Hoje: dashboard `/admin/analytics` (read-only). O editor do lead
+(alterar `status`, adicionar `notas`) **ainda não está implementado**
+— é gerido a partir do dashboard do Supabase. Recomendação: se a
+operação exigir, adicionar a aba `/admin/leads` editável em uma
+iteração futura.
 
 ---
 
-## 7. Email / SMTP
+## 7. E-mail / SMTP
 
-### Cómo está preparado
+### Como está preparado
 
 - Cliente: `nodemailer`, transportador lazy memoizado.
-- Mitigación de header injection: `sanitizeHeaderValue` strip CR/LF.
-- Escape HTML conservador en el body.
-- Manejo de errores: si SMTP falla, log local, no se rompe el flujo del
-  formulario.
+- Mitigação de header injection: `sanitizeHeaderValue` strip CR/LF.
+- Escape de HTML conservador no body.
+- Tratamento de erros: se o SMTP falhar, log local e o fluxo do
+  formulário não quebra.
 
-### Variables necesarias
+### Variáveis necessárias
 
-| Variable | Ejemplo | Comentario |
+| Variável | Exemplo | Comentário |
 |---|---|---|
-| `SMTP_HOST` | `smtp.gmail.com` o `smtp.office365.com` | |
-| `SMTP_PORT` | `587` o `465` | |
+| `SMTP_HOST` | `smtp.gmail.com` ou `smtp.office365.com` | |
+| `SMTP_PORT` | `587` ou `465` | |
 | `SMTP_SECURE` | `true` para 465, `false` para 587 | |
-| `SMTP_USER` | usuario autenticación | |
-| `SMTP_PASS` | password (nunca commitear) | |
+| `SMTP_USER` | usuário de autenticação | |
+| `SMTP_PASS` | senha (nunca commitar) | |
 | `MAIL_FROM` | `"DM2 Contabilidade <noreply@dm2contabilidade.com.br>"` | |
-| `MAIL_TO` | `contato@dm2contabilidade.com.br` | Destinatario notificaciones |
+| `MAIL_TO` | `contato@dm2contabilidade.com.br` | Destinatário de notificações |
 
-### Estado actual
+### Estado atual
 
-- **Código**: completamente implementado y probado en build.
-- **Activación en producción**: depende de cargar las 7 variables
-  en Vercel. Sin estas, el formulario sigue funcionando y guardando
-  leads, pero no hay notificación por email.
+- **Código**: completamente implementado e testado em build.
+- **Ativação em produção**: depende de carregar as 7 variáveis no
+  Vercel. Sem elas, o formulário continua funcionando e salvando
+  leads, mas não há notificação por e-mail.
 
-### Flujo de password reset por email
+### Fluxo de password reset por e-mail
 
-Reutiliza el mismo SMTP. Si SMTP no está configurado, el flow web
-muestra "Se houver uma conta, enviamos um link" pero no hay email
-real. Por eso conviene activar SMTP antes de la entrega final.
+Reutiliza o mesmo SMTP. Se o SMTP não estiver configurado, o fluxo
+web mostra "Se houver uma conta, enviamos um link", mas não há
+e-mail real. Por isso convém ativar o SMTP antes da entrega final.
 
 ---
 
-## 8. Base de datos
+## 8. Banco de dados
 
-### Tablas
+### Tabelas
 
 ```
 authors
@@ -524,7 +544,7 @@ leads
 admin_users
   id (UUID, PK)
   email (UNIQUE)
-  password_hash (scrypt format)
+  password_hash (formato scrypt)
   password_updated_at
   sessions_invalidated_at
   created_at, updated_at
@@ -534,7 +554,7 @@ admin_password_resets
   created_at, expires_at, used_at, ip_hash
 ```
 
-### Relaciones
+### Relações
 
 ```
 authors ─< blog_posts >─ blog_categories
@@ -544,150 +564,152 @@ authors ─< blog_posts >─ blog_categories
 
 admin_users ─< admin_password_resets
 
-leads (sin FK, tabla independiente)
+leads (sem FK, tabela independente)
 ```
 
 ### Storage
 
-| Bucket | Visibilidad | Límite | MIMEs aceptados |
+| Bucket | Visibilidade | Limite | MIMEs aceitos |
 |---|---|---|---|
 | `blog-covers` | público | 5 MB | image/webp, image/jpeg, image/png, image/avif |
 
 ### RLS (Row Level Security)
 
-Todas las tablas tienen RLS habilitado.
+Todas as tabelas têm RLS habilitado.
 
-- **Públicas (SELECT para anon)**: `authors` (solo activos),
-  `blog_categories` (solo activas), `blog_posts` (visibility =
-  published o scheduled <= now), `blog_post_faqs`, `blog_post_related_services`
-  (visibility heredada del post).
-- **Solo INSERT desde anon**: `leads` (formulario público, sin SELECT).
-- **Sin acceso anon**: `admin_users`, `admin_password_resets` (escritura
-  y lectura solo via `SUPABASE_SERVICE_ROLE_KEY`).
+- **Públicas (SELECT para anon)**: `authors` (apenas ativos),
+  `blog_categories` (apenas ativas), `blog_posts` (visibility =
+  published ou scheduled <= now), `blog_post_faqs`,
+  `blog_post_related_services` (visibilidade herdada do post).
+- **Apenas INSERT por anon**: `leads` (formulário público, sem
+  SELECT).
+- **Sem acesso anon**: `admin_users`, `admin_password_resets`
+  (escrita e leitura apenas via `SUPABASE_SERVICE_ROLE_KEY`).
 
 ### Scripts SQL
 
-Todos en `docs/`. Idempotentes — seguro re-ejecutar:
+Todos em `docs/`. Idempotentes — seguro reexecutar:
 
-| Archivo | Crea |
+| Arquivo | Cria |
 |---|---|
 | `supabase-blog-tables.sql` | authors, blog_categories, blog_posts, FAQs, related |
 | `supabase-blog-storage.sql` | bucket `blog-covers` + policies |
-| `supabase-blog-seed-posts.sql` | seed inicial de los 6 artículos (opcional) |
-| `supabase-leads-table.sql` | tabla leads + RLS + idempotent ALTER |
+| `supabase-blog-seed-posts.sql` | seed inicial dos 6 artigos (opcional) |
+| `supabase-leads-table.sql` | tabela leads + RLS + ALTER idempotente |
 | `supabase-admin-users.sql` | admin_users + admin_password_resets |
 
 ---
 
-## 9. Stack y dependencias
+## 9. Stack e dependências
 
 ### Stack principal
 
-| Pieza | Versión | Por qué |
+| Peça | Versão | Por quê |
 |---|---|---|
 | Next.js | 16.x | App Router, RSC, Turbopack, server actions |
 | React | 19.x | Concurrent rendering |
-| TypeScript | 5.x | Strict mode, tipado en todo el código |
-| Tailwind CSS | 4.x | Tokens `@theme inline`, sin config JS |
+| TypeScript | 5.x | Strict mode, tipagem em todo o código |
+| Tailwind CSS | 4.x | Tokens `@theme inline`, sem config JS |
 | Supabase JS | 2.x | Cliente para Postgres + Storage |
-| Nodemailer | 8.x | Envío SMTP (leads + password reset) |
-| Zod | 4.x | Validación de inputs en server actions |
+| Nodemailer | 8.x | Envio SMTP (leads + password reset) |
+| Zod | 4.x | Validação de inputs em server actions |
 | React Hook Form | 7.x | Form de contato controlado |
 
-### Dependencias secundarias
+### Dependências secundárias
 
 - `@hookform/resolvers` — bridge Zod ↔ react-hook-form.
 - `@types/nodemailer` — tipos.
-- `resend` — **legacy**, no se usa. Pendiente eliminar (ver
-  recomendaciones).
+- `resend` — **legado**, não é usado. Pendente remover (ver
+  recomendações).
 
-### Hosting
+### Hospedagem
 
 - **Vercel**: build, edge middleware, runtime serverless. Configura
-  env vars desde el dashboard. Cada push a `main` dispara deploy.
-- **Supabase**: backend único (Postgres + Storage + RLS). Proyecto
+  env vars pelo dashboard. Cada push para `main` dispara deploy.
+- **Supabase**: backend único (Postgres + Storage + RLS). Projeto
   `zyisowurfrutywmkhiki`.
-- **Cloudflare Turnstile**: validación de bot en el formulario.
-- **Google Fonts**: self-hosted vía `next/font/google` (sin requests
-  externos en runtime).
+- **Cloudflare Turnstile**: validação de bot no formulário.
+- **Google Fonts**: self-hosted via `next/font/google` (sem requests
+  externos em runtime).
 
-### Rendimiento de build
+### Performance de build
 
-- Compilación TypeScript: ~2 s.
+- Compilação TypeScript: ~2 s.
 - Total `next build`: ~10 s.
-- 23 rutas (8 estáticas, 15 dinámicas server-rendered).
+- 22 rotas (8 estáticas, 14 dinâmicas server-rendered).
 
 ---
 
-## 10. Recomendaciones futuras
+## 10. Recomendações futuras
 
-### Activación pendiente para producción
+### Ativação pendente para produção
 
-1. **Configurar SMTP en Vercel** (7 variables). Sin esto, no hay
-   notificación de leads ni password reset por email.
-2. **Configurar Cloudflare Turnstile en Vercel**
-   (`NEXT_PUBLIC_TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY`). Sin
-   esto, el formulario rechaza envíos.
-3. **Apuntar el dominio**: `dm2contabilidade.com.br` debería apuntar
-   al deploy de Vercel (DNS + verificación). Hoy el sitio vive en
-   `site-tau-gray-68.vercel.app` provisional.
-4. **Confirmar que `NEXT_PUBLIC_SITE_URL` en Vercel = dominio final**
-   (no `localhost` ni el preview).
+1. **Configurar SMTP no Vercel** (7 variáveis). Sem isso, não há
+   notificação de leads nem password reset por e-mail.
+2. **Configurar Cloudflare Turnstile no Vercel**
+   (`NEXT_PUBLIC_TURNSTILE_SITE_KEY` e `TURNSTILE_SECRET_KEY`). Sem
+   isso, o formulário rejeita os envios.
+3. **Apontar o domínio**: `dm2contabilidade.com.br` deve apontar para
+   o deploy do Vercel (DNS + verificação). Hoje o site está em
+   `site-tau-gray-68.vercel.app` provisório.
+4. **Confirmar que `NEXT_PUBLIC_SITE_URL` no Vercel = domínio final**
+   (não `localhost` nem o preview).
 
-### Nice-to-have a futuro (no bloqueantes)
+### Nice-to-have a futuro (não bloqueantes)
 
-- **Editor de leads en `/admin`**: hoy se gestiona desde Supabase
-  dashboard. Si el equipo comercial quiere cambiar `status` y agregar
-  `notas` desde el panel, agregar `/admin/leads`.
-- **Eliminar dependencia `resend`**: legacy, no usada. Quitar de
-  `package.json` reduce 6+ MB del install y elimina ruido.
-- **Renombrar `middleware.ts` → `proxy.ts`**: Next 16 deprecó la
-  convención `middleware`. Aviso cosmético, no bloqueante. Renombrar
-  cuando convenga.
-- **Caché del blog**: hoy `/blog` server-renders en ~1-3 s en cold
-  start. Si el tráfico crece, revaluar caching ISR o tags.
-- **Imágenes en posts**: hoy se sube cover. Cuerpo del artículo es
-  HTML libre. Si los editores van a pegar imágenes inline, evaluar
-  uploader inline.
-- **Author profile pages**: las URLs `/blog/autor/{slug}` no existen.
-  Si el equipo va a sumar autores y quiere darles página, agregar.
+- **Editor de leads no `/admin`**: hoje é gerido pelo dashboard do
+  Supabase. Se o time comercial quiser alterar `status` e adicionar
+  `notas` pelo painel, adicionar `/admin/leads`.
+- **Remover dependência `resend`**: legado, não usada. Tirar de
+  `package.json` reduz 6+ MB do install e elimina ruído.
+- **Renomear `middleware.ts` → `proxy.ts`**: o Next 16 deprecou a
+  convenção `middleware`. Aviso cosmético, não bloqueante. Renomear
+  quando for conveniente.
+- **Cache do blog**: hoje `/blog` server-renderiza em ~1-3 s no cold
+  start. Se o tráfego crescer, reavaliar caching ISR ou tags.
+- **Imagens em posts**: hoje sobe-se a capa. O corpo do artigo é HTML
+  livre. Se os editores forem colar imagens inline, avaliar uploader
+  inline.
+- **Páginas de perfil de autor**: as URLs `/blog/autor/{slug}` não
+  existem. Se o time for somar autores e quiser dar página a eles,
+  adicionar.
 
-### Mantenimiento
+### Manutenção
 
-- **Backups**: Supabase ofrece point-in-time recovery (paid tier). Si
-  el plan es free, hacer backups manuales periódicos del schema y
-  data crítica (`pg_dump` desde el dashboard).
-- **Rotación de secretos**: `ADMIN_SESSION_SECRET` rotación opcional
-  cada 6-12 meses. Una rotación invalida todas las sesiones admin
-  activas (intencional).
-- **Actualizaciones de dependencias**: Next.js minor cada ~3 meses,
-  Tailwind y Supabase trimestrales. Validar build local antes de
-  pushear.
-- **Logs**: Vercel guarda logs de runtime 30 días en plan free. Si se
-  necesita más historia, conectar a Logtail / Datadog.
+- **Backups**: o Supabase oferece point-in-time recovery (paid tier).
+  Se o plano for free, fazer backups manuais periódicos do schema e
+  dos dados críticos (`pg_dump` a partir do dashboard).
+- **Rotação de segredos**: a rotação de `ADMIN_SESSION_SECRET` é
+  opcional, a cada 6-12 meses. Uma rotação invalida todas as sessões
+  admin ativas (intencional).
+- **Atualizações de dependências**: Next.js minor a cada ~3 meses,
+  Tailwind e Supabase trimestrais. Validar build local antes de
+  fazer push.
+- **Logs**: o Vercel guarda logs de runtime por 30 dias no plano
+  free. Se for preciso mais histórico, conectar a Logtail / Datadog.
 
 ---
 
-## Anexo — Variables de entorno
+## Anexo — Variáveis de ambiente
 
-Lista completa de las variables que necesita el sitio. Server-only
-salvo las que comienzan con `NEXT_PUBLIC_`.
+Lista completa das variáveis exigidas pelo site. Server-only, salvo
+as que começam com `NEXT_PUBLIC_`.
 
 ```
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
-SUPABASE_SERVICE_ROLE_KEY            # crítico — server-only
+SUPABASE_SERVICE_ROLE_KEY            # crítica — server-only
 
-# Sitio
+# Site
 NEXT_PUBLIC_SITE_URL                 # https://dm2contabilidade.com.br
 
 # Admin
-ADMIN_BLOG_PASSWORD                  # solo seed inicial
+ADMIN_BLOG_PASSWORD                  # apenas seed inicial
 ADMIN_EMAIL                          # contato@dm2contabilidade.com.br
 ADMIN_SESSION_SECRET                 # 32+ chars random
 
-# SMTP (formulario + password reset)
+# SMTP (formulário + password reset)
 SMTP_HOST
 SMTP_PORT
 SMTP_SECURE
@@ -707,34 +729,34 @@ NEXT_PUBLIC_META_PIXEL_ID
 
 ---
 
-## Anexo — URLs del admin (referencia rápida)
+## Anexo — URLs do admin (referência rápida)
 
-| Acción | URL (sustituir dominio) |
+| Ação | URL (substituir o domínio) |
 |---|---|
 | Login | `/admin/blog/login` |
-| Listado de posts | `/admin/blog` |
-| Crear post | `/admin/blog/new` |
+| Listagem de posts | `/admin/blog` |
+| Criar post | `/admin/blog/new` |
 | Editar post | `/admin/blog/{id}` |
-| Recuperar contraseña | `/admin/blog/password-reset` |
-| Definir nueva contraseña (link del email) | `/admin/blog/password-reset/confirm?token=…` |
+| Recuperar senha | `/admin/blog/password-reset` |
+| Definir nova senha (link do e-mail) | `/admin/blog/password-reset/confirm?token=…` |
 | Dashboard de métricas | `/admin/analytics` |
 
 ---
 
-## Anexo — Cómo correr SQL en Supabase
+## Anexo — Como rodar SQL no Supabase
 
-1. Dashboard del proyecto → **SQL Editor** → **New query**.
-2. Pegar el contenido del archivo `.sql` correspondiente.
-3. Click **Run**.
+1. Dashboard do projeto → **SQL Editor** → **New query**.
+2. Colar o conteúdo do arquivo `.sql` correspondente.
+3. Clicar em **Run**.
 
-Si el script ya se corrió antes y se intenta de nuevo, todos los
-scripts son idempotentes — usan `IF NOT EXISTS` y `ON CONFLICT
-DO NOTHING / DO UPDATE`. Es seguro re-ejecutar.
+Se um script já tiver sido rodado e for tentado de novo, todos os
+scripts são idempotentes — usam `IF NOT EXISTS` e `ON CONFLICT DO
+NOTHING / DO UPDATE`. É seguro reexecutar.
 
 ---
 
-*Documento generado en el cierre de la fase de implementación.*
-*Cualquier duda técnica posterior puede consultarse contra los
-archivos rectores en `docs/` (MASTER-PLAN, SITEMAP-SEO-GEO-ARCHITECTURE,
+*Documento gerado no fechamento da fase de implementação.*
+*Qualquer dúvida técnica posterior pode ser consultada nos arquivos
+norteadores em `docs/` (MASTER-PLAN, SITEMAP-SEO-GEO-ARCHITECTURE,
 DESIGN-SYSTEM-UX-SYSTEM, COPY-SYSTEM-CONTENT-ARCHITECTURE,
 TECHNICAL-ARCHITECTURE-DATA-SECURITY-TRACKING).*
