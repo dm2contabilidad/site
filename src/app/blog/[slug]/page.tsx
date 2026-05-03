@@ -47,7 +47,9 @@ export async function generateMetadata({
   const post = await getPostBySlug(slug);
   if (!post) {
     return {
-      title: 'Artigo não encontrado | DM2 Contabilidade',
+      // `absolute` evita que defaultMetadata.title.template duplique
+      // o sufixo da marca (que já está incluído em SEO/page titles).
+      title: { absolute: 'Artigo não encontrado | DM2 Contabilidade' },
       robots: { index: false, follow: false },
     };
   }
@@ -59,7 +61,8 @@ export async function generateMetadata({
   const ogImage = absoluteUrl(post.ogImageUrl ?? post.coverImageUrl);
 
   return {
-    title,
+    // `absolute` impede a duplicação de "| DM2 Contabilidade" via template.
+    title: { absolute: title },
     description,
     alternates: { canonical: post.canonicalUrl ?? url },
     robots: {

@@ -28,7 +28,12 @@ export function createMetadata({
   const image = ogImage || `${SITE_URL}/images/og/home-og-sao-paulo.webp`;
 
   return {
-    title,
+    // `absolute` bypasses the title.template defined in defaultMetadata.
+    // Page authors already include the brand suffix in their titles
+    // (e.g. "Contato | DM2 Contabilidade em São Paulo"); applying the
+    // template on top of that produced duplicates like
+    // "Contato | DM2 Contabilidade em São Paulo | DM2 Contabilidade".
+    title: { absolute: title },
     description,
     ...(noIndex && { robots: { index: false, follow: false } }),
     alternates: {
