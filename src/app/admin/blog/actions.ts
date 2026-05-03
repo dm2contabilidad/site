@@ -2,7 +2,7 @@
 
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import {
   ADMIN_COOKIE_NAME,
   ADMIN_SESSION_TTL_SECONDS,
@@ -298,6 +298,8 @@ export async function createPostAction(formData: FormData): Promise<SaveResult> 
 
   revalidatePath('/admin/blog');
   revalidatePath('/blog');
+  // Invalida o cache de queries em src/lib/blog/queries-cached.ts.
+  updateTag('blog');
   return { ok: true, postId: data.id };
 }
 
@@ -339,6 +341,7 @@ export async function updatePostAction(id: string, formData: FormData): Promise<
   revalidatePath(`/admin/blog/${id}`);
   revalidatePath('/blog');
   revalidatePath(`/blog/${parsed.data.slug}`);
+  updateTag('blog');
   return { ok: true, postId: id };
 }
 
@@ -364,6 +367,7 @@ export async function setStatusAction(
   if (error) return { ok: false, error: 'Falha ao atualizar status.' };
   revalidatePath('/admin/blog');
   revalidatePath('/blog');
+  updateTag('blog');
   return { ok: true };
 }
 
@@ -375,5 +379,6 @@ export async function deletePostAction(id: string): Promise<{ ok: boolean; error
   if (error) return { ok: false, error: 'Não foi possível excluir o post.' };
   revalidatePath('/admin/blog');
   revalidatePath('/blog');
+  updateTag('blog');
   return { ok: true };
 }

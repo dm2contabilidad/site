@@ -8,11 +8,11 @@ import {
   ItemListSchema,
 } from '@/components/seo/SchemaMarkup';
 import {
-  countPublishedPosts,
-  getActiveCategories,
-  getFeaturedPosts,
-  getPublishedPosts,
-} from '@/lib/blog/queries';
+  countPublishedPostsCached,
+  getActiveCategoriesCached,
+  getFeaturedPostsCached,
+  getPublishedPostsCached,
+} from '@/lib/blog/queries-cached';
 import type { BlogCategorySlug, BlogPost } from '@/types/blog';
 import { Badge } from '@/components/ui/Badge';
 import { siteConfig } from '@/content/site';
@@ -86,14 +86,14 @@ interface BlogPageProps {
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   const sp = await searchParams;
-  const categories = await getActiveCategories();
+  const categories = await getActiveCategoriesCached();
   const validSlugs = new Set(categories.map((c) => c.slug));
 
   const categoria = parseCategoria(sp.categoria, validSlugs);
   const porPagina = parsePerPage(sp.por_pagina);
   let pagina = parsePage(sp.pagina);
 
-  const total = await countPublishedPosts({ categorySlug: categoria });
+  const total = await countPublishedPostsCached(categoria);
   const totalPages = Math.max(1, Math.ceil(total / porPagina));
   if (pagina > totalPages) pagina = totalPages;
 
@@ -101,18 +101,18 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   // hierarchy meaningful (no featured drift across paginated views).
   const showFeaturedRow = !categoria && pagina === 1;
   const featuredPosts: BlogPost[] = showFeaturedRow
-    ? await getFeaturedPosts(2)
+    ? await getFeaturedPostsCached(2)
     : [];
   const featuredIds = new Set(featuredPosts.map((p) => p.id));
 
   // Fetch slightly more on page 1 so the grid can drop the featured ids
   // and still fill `porPagina` cards.
   const fetchLimit = showFeaturedRow ? porPagina + featuredPosts.length : porPagina;
-  const fetched = await getPublishedPosts({
-    limit: fetchLimit,
-    offset: (pagina - 1) * porPagina,
-    categorySlug: categoria,
-  });
+  const fetched = await getPublishedPostsCached(
+    fetchLimit,
+    (pagina - 1) * porPagina,
+    categoria,
+  );
   const posts = fetched.filter((p) => !featuredIds.has(p.id)).slice(0, porPagina);
 
   // For the ItemList schema, enumerate the full visible set (featured + grid).
