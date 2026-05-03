@@ -13,10 +13,28 @@ import {
   getPostBySlug,
   getPostFaqs,
   getPostRelatedServiceSlugs,
+  getPublishedPosts,
 } from '@/lib/blog/queries';
 import { services } from '@/content/services';
 import { siteConfig, TECHNICAL_REFERENCE } from '@/content/site';
 import type { ServiceSlug } from '@/types/service';
+
+// ISR: HTML cacheado por até 60 s e regenerado em background. Slugs
+// que não estavam pré-renderizados no build (ex.: post agendado que
+// acabou de virar visível) são gerados on-demand na primeira visita
+// e cacheados para os 60 s seguintes. Invalidação manual via
+// revalidatePath em src/app/admin/blog/actions.ts.
+export const revalidate = 60;
+
+// Pre-render dos posts já publicados no build. Posts criados ou
+// agendados depois são gerados on-demand; dynamicParams=true (default)
+// permite isso. Reduz drasticamente o TTFB do hot path (artigos
+// publicados ficam estáticos como qualquer outra página institucional).
+export async function generateStaticParams() {
+  // limit alto porque é cheap: só puxa 200 slugs no build, sem joins.
+  const posts = await getPublishedPosts({ limit: 200 });
+  return posts.map((p) => ({ slug: p.slug }));
+}
 
 const longDateFormatter = new Intl.DateTimeFormat('pt-BR', {
   day: '2-digit',

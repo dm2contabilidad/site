@@ -24,6 +24,14 @@ export const metadata = createMetadata({
   path: '/blog',
 });
 
+// ISR: o HTML é cacheado pela CDN da Vercel por até 60 s e regenerado
+// em background. As queries Supabase passam a rodar a cada ~60 s no pior
+// caso, em vez de a cada request. Posts agendados (status=scheduled,
+// published_at futuro) aparecem dentro de 1 min do horário programado;
+// criação/edição via /admin/blog dispara revalidatePath('/blog')
+// automaticamente, então a invalidação manual é instantânea.
+export const revalidate = 60;
+
 const PER_PAGE_OPTIONS = [12, 24, 48] as const;
 const DEFAULT_PER_PAGE = 12;
 type PerPage = (typeof PER_PAGE_OPTIONS)[number];

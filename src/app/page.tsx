@@ -29,6 +29,14 @@ export const metadata = createMetadata({
   ogImage: '/images/og/home-og-sao-paulo.webp',
 });
 
+// ISR: o home consome getFeaturedPosts(3) (mistura featured manual +
+// últimos publicados). Sem revalidate ele ficaria fixo na fotografia
+// do build e um post novo só apareceria após redeploy. 60 s mantém o
+// home praticamente fresco (custo desprezível, regenerado em
+// background) e respeita o invariant de "posts agendados aparecem
+// quando chega a hora" sem precisar de revalidate manual.
+export const revalidate = 60;
+
 const protagonistServices = [
   {
     title: 'Consultoria Contábil',
